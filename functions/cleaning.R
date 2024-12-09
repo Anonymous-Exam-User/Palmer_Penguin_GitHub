@@ -1,9 +1,4 @@
-cleaning_columns <- function(raw_data){
-  raw_data %>% 
-    select(-Comments) %>% 
-    select(-starts_with ("Delta")) %>%
-    clean_names()
-}
+
 
 
 ## ---------------------------
@@ -29,8 +24,10 @@ cleaning_columns <- function(raw_data){
 
 # A function to make sure the column names are cleaned up, 
 # eg lower case and snake case
-clean_column_names <- function(penguins_raw) {
-  penguins_raw %>%
+cleaning_columns <- function(raw_data){
+  raw_data %>% 
+    select(-Comments) %>% 
+    select(-starts_with ("Delta")) %>%
     clean_names()
 }
 

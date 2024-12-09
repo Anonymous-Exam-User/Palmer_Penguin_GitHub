@@ -117,6 +117,7 @@ library("knitr")
 library("rmarkdown") 
 library("here") 
 library("tidyverse") 
+library("janitor")
 
 renv::status()
 ```
@@ -130,6 +131,26 @@ View(penguins_raw)
 ```
 
 This uses the read_csv() function, contained in tidyverse and producing a "tibble". Tibbles are a "modern take on data frames" (R Core Team, 2024). The here() function avoids privacy concerns by sidestepping entering file directories and improves operating system cross-compatibility.
+
+Next in the pipeline, we can further familiarize ourselves with the data by looking at the column names
+
+```{r}
+colnames(penguins_raw)
+```
+
+It is apparent from the mixture of styles (e.g. camelCase) and abundance of error causing characters (especially spaces and misformatted symbols) that we should clean our dataset. Here, it is important to resist the urge to edit the raw data, as this ruins reproducibility. Instead we should make a new dataset.
+
+```{r}
+source(here("functions", "cleaning.r"))
+
+penguins_clean <- penguins_raw %>%
+  clean_column_names() %>%
+  remove_columns(c("comments", "delta")) %>%
+  shorten_species() %>%
+  remove_empty_columns_rows()
+```
+
+The above code begins by sourcing a file named "cleaning.r" from within our directory. It uses code written by Dr Lydia France
 
 ### Hypothesis
 
