@@ -7,7 +7,7 @@ date: "2024-11-08"
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE) #this makes the document default to have echo = TRUE
 ```
 
 *The following is a template .rmd RMarkdown file for you to use for your homework submission.*
@@ -39,40 +39,21 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ------------------------------------------------------------------------
 
-## QUESTION 2: Data Pipeline
+## QUESTION 2: Data Analysis Pipeline
 
-*Write a data analysis pipeline in your .rmd RMarkdown file. You should be aiming to write a clear explanation of the steps as well as clear code.*
+*Write a data analysis pipeline.*
+
+*You should be aiming to write a clear explanation of the steps as well as clear code.*
 
 *Your code should include the steps practiced in the lab session:*
 
--   *Load the data*
+Written in the structure of a paper.
 
-I start by loading the libraries we will be using. To protect the environment, I will be using renv(). This is a package that ensures the packages we use have a record of which version was being used at the time we write our code. This prevents subsequent updates to packages from affecting our code's functionality.
+-   Load the data
 
-I considered loading packages in a separate file and importing them with source(); however, opt not to as, despite keeping the code marginally cleaner, readers are forced to open an additional file and reduces the level of self-containment from the .Rmd file. Users can then use renv::status to ensure the packages are correctly loaded in a consistent state.
-
-```{r}
-
-
-library("renv") 
-library("knitr") 
-library("rmarkdown") 
-library("here") 
-library("tidyverse") 
-
-renv::status()
+```{=html}
+<!-- -->
 ```
-
-On to the data itself. This was downloaded from Canvas and placed in a file, created and named "data". I could load the data from the "palmerpenguins" package. However, more often in reality we will be loading data from files rather than R packages. Hence, I push the file to my GitHub Repository. If someone downloads the repository, this should be perfectly functional. I then like to look at the data in full.
-
-```{r}
-penguins_raw <- read_csv(here("data", "penguins_raw.csv"))
-
-View(penguins_raw)
-```
-
-This uses the read_csv() function, contained in tidyverse and producing a "tibble". Tibbles are a "modern take on data frames" (R Core Team, 2024). The here() function avoids privacy concerns by sidestepping entering file directories and improves operating system cross-compatibility.
-
 -   *Appropriately clean the data*
 
 -   *Create an Exploratory Figure (**not a boxplot**)*
@@ -117,11 +98,39 @@ This uses the read_csv() function, contained in tidyverse and producing a "tibbl
 
 ### Introduction
 
-```{r Data Exploration}
+-   *Load the data*
 
-# Make sure your code prints. 
+I start by loading the libraries we will be using. To protect the environment, I will be using renv(). This is a package that ensures the packages we use have a record of which version was being used at the time we write our code. This prevents subsequent updates to packages from affecting our code's functionality.
 
+I considered loading packages in a separate file and importing them with source(); however, opt not to as, despite keeping the code marginally cleaner, readers are forced to open an additional file and reduces the level of self-containment from the .Rmd file. Users can then use renv::status to ensure the packages are correctly loaded in a consistent state.
+
+```{r Data Exploration, echo=TRUE}
+
+
+
+# Make sure your code prints.
+
+#i.e use echo
+
+
+library("renv") 
+library("knitr") 
+library("rmarkdown") 
+library("here") 
+library("tidyverse") 
+
+renv::status()
 ```
+
+On to the data itself. This was downloaded from Canvas and placed in a file, created and named "data". I could load the data from the "palmerpenguins" package. However, more often in reality we will be loading data from files rather than R packages. Hence, I push the file to my GitHub Repository. If someone downloads the repository, this should be perfectly functional. I then like to look at the data in full.
+
+```{r echo=TRUE}
+penguins_raw <- read_csv(here("data", "penguins_raw.csv"))
+
+View(penguins_raw)
+```
+
+This uses the read_csv() function, contained in tidyverse and producing a "tibble". Tibbles are a "modern take on data frames" (R Core Team, 2024). The here() function avoids privacy concerns by sidestepping entering file directories and improves operating system cross-compatibility.
 
 ### Hypothesis
 
