@@ -31,11 +31,56 @@ knitr::opts_chunk$set(echo = TRUE) #this makes the document default to have echo
 
 ```{r bad figure code, echo=FALSE}
 
-# There is no need to provide the code for your bad figure, just use echo=FALSE so the code is hidden. Make sure your figure is visible after you knit it. 
+# Make sure your figure is visible after you knit it. 
 
+ggplot(data = penguins_clean, aes(x = date_egg, y = body_mass_g)) +
+  stat_smooth(method = "lm", se = FALSE, color = "darkred", 
+              geom = "line", 
+              size = 1,  # Increase line thickness
+              arrow = arrow(length = unit(0.2, "cm"), ends = "last", type = "closed")) +
+  geom_point(color = "darkred", alpha = 0.2) +
+  coord_fixed(ratio = 2) +
+  theme_minimal() +
+  theme(axis.text.y = element_blank()) +
+  scale_y_continuous() +
+  coord_cartesian(ylim = c(4150, 4300)) +
+
+    scale_x_date(
+    breaks = as.Date(c("2008-01-01", "2008-07-01", "2009-01-01", "2009-07-01", "2010-01-01")),
+    labels = c(expression(bold("2008-01")), "2008-07", "2009-01", "2009-07", "2010-01")
+  ) +
+  labs(
+    title = "Palmer Penguin Body Mass over Time",
+    x = "Time since Chef Smith's Arrival",
+    y = "Body Mass (g)"
+  )
+
+#^fix X-axis cut-off >55 words too long
 ```
 
 ### b) Write about how your design choices mislead the reader about the underlying data (100-300 words).
+
+Imagine a scenario where I am in an argument with Chef Smith in my Antarctic field station. I devise a plan to get them fired by convincing the public that their food waste is causing an obesity epidemic around the Palmer Station, Antarctica LTER. Taking to twitter, I share the above graph.
+
+Points of deception:
+
+-   I have started the graph from where the linear relationship begins, rather than 0 or another appropriate point. This exaggerates the steepness of the linear relationship, which would look almost negligible if seen as it should be.
+
+-   I am only using the species Gentoo, but extrapolating to all Palmer Penguin's in the title. In fact, Adelie Penguins have gotten smaller since Chef Smith's arrival. (N.B. I am taking the graph title and axis labels to be "visual elements").
+
+-   I have elected to make the line red, a colour commonly associated with negatives. This helps as there is no clear backing that the weight "increase" is really a negative.
+
+-   I have made the line an arrow, in the hopes that it will convince of a continued projected increase should Chef Smith remain employed.
+
+-   Rather than labelling with the objective "Date", I have drawn attention to how time relates to my intended point.
+
+-   I have used the code "coord_fixed(ratio = 10)" which stretches the graph vertically and hugely exaggerates the steepness of the line.
+
+-   I have used the code "coord_fixed(ratio = 10)" which stretches the graph vertically and hugely exaggerates the steepness of the line.
+
+-   I have made the individual label 2008-01 bold. I did this while ensuring the axes remain the same as when they are entered in a repeatable manner, so it remains technically "correct". The intended effect is to again call attention to the false association between Chef Smith's arrival and increased penguin body mass.
+
+-   I used scale_y_continuous() along with coord_cartesian(ylim = c(x1, x2)). This enabled me to manipulate the y axis, while coord_cartesian() ensured that the "zoom effect" excludes the data points from the graph but not the lm(). This circumvents an issue where it looks too obviously fabricated without any data visible.
 
 ------------------------------------------------------------------------
 
@@ -159,6 +204,10 @@ The above code begins by sourcing a file named "cleaning.r" from within our dire
 
 I'm interested in whether there is any relationship between the categorical variable "clutch_completion" and "body_mass_g". I expect this to naturally vary between species and sex, so want to control for those factors. I will assume that time and geographical factors are independent.
 
+"(21) Subset the Data
+
+As part of data pipelines, we often want to subset the data for plotting or analysis. We may only want to look at two columns, the species and the body mass. We can do this by using the `select()` function."
+
 ```{r}
 body_mass_clutch <- penguins_clean %>%
   select(species, body_mass_g, sex, clutch_completion) 
@@ -174,19 +223,48 @@ ggplot(body_mass_clutch, aes(x = clutch_completion, y = body_mass_g, fill = clut
        fill = "Clutch Completion")
 ```
 
-"(21) Subset the Data
-
-As part of data pipelines, we often want to subset the data for plotting or analysis. We may only want to look at two columns, the species and the body mass. We can do this by using the `select()` function."
-
 ### Hypothesis
+
+$\text{H}_0 :$ There is no significant difference in clutch completion according to body mass.
+
+$\text{H}_{a1} :$ Penguins with greater body mass have significantly higher clutch completions.
+
+$\text{H}_{a2} :$ Penguins with greater body mass have significantly lower clutch completions.
 
 ### Statistical Methods
 
-```{r Statistics}
+It should be possible to run a binomial logistic regression with clutch_completion as the response variable.
 
-# Make sure your code prints. 
+```{r Statistics}
+#convert completion into 1 = yes, 0 = no.
+body_mass_clutch$clutch_completion_binary <- ifelse(body_mass_clutch$clutch_completion == "Yes", 1, 0) # new column to avoid over
+
+View(body_mass_clutch)
+
+
+logistic_regression_model <- glm(clutch_completion_binary ~ body_mass_g + sex + species, 
+             family = binomial(link = "logit"), 
+             data = body_mass_clutch)
+summary(logistic_regression_model)
+
+
 
 ```
+
+```{r}
+library(car)
+vif(logistic_regression_model)
+```
+
+This indicates moderate multicollinearity between factors, especially body_mass_g. However, it is not so extreme as to exclude any variables from the model. Instead we should be cautious to consider multicollinearities potential bias when interpreting the model.
+
+```{r}
+library(MASS)
+stepwise_model <- stepAIC(logistic_regression_model, direction = "both")
+summary(stepwise_model)
+```
+
+Similarly, when veryifying our results by performing selection to ensure there is no overfitting, We see that Species is the only significant factor in determining clutch completion that we included in our model.
 
 ### Results & Discussion
 
