@@ -1,27 +1,4 @@
 
-
-
-## ---------------------------
-##
-## Script name: Cleaning.r
-##
-## Purpose of script: 
-##      # A file of functions for cleaning the Palmer Penguins dataset
-##
-## Author: Dr. Lydia France
-##
-## Date Created: 2024-10-01 
-##
-##
-## ---------------------------
-##
-## Notes:
-##   
-##
-## ---------------------------
-
-
-
 # A function to make sure the column names are cleaned up, 
 # eg lower case and snake case
 cleaning_columns <- function(raw_data){
@@ -60,4 +37,10 @@ remove_NA <- function(penguins_raw) {
     na.omit()
 }
 
+cleaning_columns_geographical <- function(raw_data){
+  raw_data %>% 
+    select(-Comments) %>% 
+    clean_names() 
+  
+}
 

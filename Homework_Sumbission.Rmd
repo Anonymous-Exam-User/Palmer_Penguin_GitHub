@@ -50,19 +50,11 @@ knitr::opts_chunk$set(echo = TRUE) #this makes the document default to have echo
 Written in the structure of a paper.
 
 -   Load the data
-
-<!-- -->
-
 -   *Appropriately clean the data*
-
 -   *Create an Exploratory Figure (**not a boxplot**)*
-
 -   *Save the figure*
-
 -   ***New**: Run a statistical test*
-
 -   ***New**: Create a Results Figure*
-
 -   *Save the figure*
 
 *An exploratory figure shows raw data, such as the distribution of the data. A results figure demonstrates the stats method chosen, and includes the results of the stats test or model.*
@@ -96,6 +88,10 @@ Written in the structure of a paper.
 ------------------------------------------------------------------------
 
 ### Introduction
+
+-   What is the data?
+
+The data features various pieces of information gathered on three species of Penguins around the Palmer Station, Antarctica. Collected variables include geographical data, various morphological characteristics, and details on reproductive success.
 
 -   *Load the data*
 
@@ -138,19 +134,49 @@ Next in the pipeline, we can further familiarize ourselves with the data by look
 colnames(penguins_raw)
 ```
 
-It is apparent from the mixture of styles (e.g. camelCase) and abundance of error causing characters (especially spaces and misformatted symbols) that we should clean our dataset. Here, it is important to resist the urge to edit the raw data, as this ruins reproducibility. Instead we should make a new dataset.
+It is apparent from the mixture of styles (e.g. camel case and sentence case) and abundance of error causing characters (e.g. spaces, brackets, and slashes) that we should clean our dataset. Here, it is important to resist the urge to edit the raw data, as this ruins reproducibility. Instead we should make a new dataset.
 
 ```{r}
 source(here("functions", "cleaning.r"))
 
 penguins_clean <- penguins_raw %>%
-  clean_column_names() %>%
-  remove_columns(c("comments", "delta")) %>%
+  cleaning_columns() %>% #automatically snake case
   shorten_species() %>%
-  remove_empty_columns_rows()
+  remove_empty_columns_rows() %>% 
+  remove_NA() %>% # by removing NA, the previous numbers become misaligned, and Tibble handles it automatically. 
+  select(-x1) # remove column "x1"
+  select(-sample_number)
+
+View(penguins_clean)
+
+colnames(penguins_clean)
+
 ```
 
-The above code begins by sourcing a file named "cleaning.r" from within our directory. It uses code written by Dr Lydia France
+The above code begins by sourcing a file named "cleaning.r" from within our directory. It uses Dr France's functions for cleaning the data, which itself uses generic cleaning functions from the "janitor" package. By using \`source()\` and a separate file, we streamline our work by ensuring any functions which may be used multiple times in the project only need to be edited in one place. The code also makes use of a "pipe", here styled as part of the "tidyverse" package. It is essentially equivalent to the instruction "and then".
+
+-   *Create an Exploratory Figure (**not a boxplot**)*
+
+I'm interested in whether there is any relationship between the categorical variable "clutch_completion" and "body_mass_g". I expect this to naturally vary between species and sex, so want to control for those factors. I will assume that time and geographical factors are independent.
+
+```{r}
+body_mass_clutch <- penguins_clean %>%
+  select(species, body_mass_g, sex, clutch_completion) 
+
+ggplot(body_mass_clutch, aes(x = clutch_completion, y = body_mass_g, fill = clutch_completion)) +
+  geom_boxplot() +
+  facet_wrap(~species) +
+  theme_minimal() +
+  scale_fill_brewer(palette = "Set3") + # change color palette
+  labs(title = "Body Mass by Clutch Completion for Each Species",
+       x = "Clutch Completion",
+       y = "Body Mass (g)",
+       fill = "Clutch Completion")
+```
+
+"(21) Subset the Data
+
+As part of data pipelines, we often want to subset the data for plotting or analysis. We may only want to look at two columns, the species and the body mass. We can do this by using the `select()` function."
 
 ### Hypothesis
 
