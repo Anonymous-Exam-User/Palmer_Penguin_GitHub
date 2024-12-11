@@ -332,6 +332,10 @@ summary(logistic_regression_model)
 
 ```
 
+I create a new column in the dataset `body_mass_clutch` with values `Yes` and `No` converted to `1` and `0`, respectively. This allows the binomial logistic regression to run, which uses `glm`. A linear model uses the a direct link function, to make predictions on the response scale. The binomial logistic regression uses the `logit` link function, which converts predictions to the probabalistic log-odds scale. To discuss the results, it is common practice to exponentiate the coefficients in order to interpret them as odds-ratios.
+
+-   Checking model assumptions.
+
 Next I check for multicollinearity, as sexes and species can tend to be bigger, which would make our model results appear stronger than they should through a form of double counting.
 
 ```{r}
@@ -348,6 +352,45 @@ summary(stepwise_model)
 ```
 
 In both the selected model and the full model, the comparison between Adelie and Gentoo clutch completion success is the only statistically significant factor for predicting clutch completion according to both models. As the AIC scores are nearly identical in each, I will focus my discussion on the full model.
+
+To check for independence, it can often be useful to plot collection against time.
+
+```{r}
+plot_independence <- function(data, time_col, value_col, group_col = NULL) {
+    # Convert column names to symbols
+  time_sym <- rlang::sym(time_col)
+  value_sym <- rlang::sym(value_col)
+  
+set.seed(0)
+  
+p <- ggplot(data, aes(x = !!time_sym, y = !!value_sym)) +
+    geom_point(alpha = 0.6) +
+    labs(
+      x = "Time",
+      y = "Observed Value",
+      title = "Check for Independence Over Time") +
+    theme_minimal()
+    return(p)
+}
+
+plot <- plot_independence(
+  data = penguins_clean,
+  time_col = "date_egg",
+  value_col = "body_mass_g"
+)
+
+print(plot)
+```
+
+Finally, we should check the assumption of a linear relationship between continuous explanatory variables and the logit of the response variable with a Box-Tidwell Test.
+
+```{r}
+
+
+boxTidwell(clutch_completion_binary ~ body_mass_g, data = body_mass_clutch_updated)
+```
+
+The p-value indicates that we do not reject the null hypothesis that the relationship is linear.
 
 ### Results & Discussion
 
