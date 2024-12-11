@@ -161,6 +161,7 @@ library(ragg)
 library(car)
 library(MASS)
 library(gridExtra)
+library(grid)
 
 renv::status()
 ```
@@ -475,22 +476,44 @@ Next I will make a new function to save the table. This requires the additional 
 ```{r saving table as SVG}
 
 
-save_table_svg <- function(table, filename, size, scaling) {
-    size_inches = size / 2.54  # inch to cm
+save_table_svg <- function(table, filename, size, scaling, title = NULL, vjust = NULL) {
+    size_inches = size / 2.54  # Convert cm to inches
     svglite(filename, width = size_inches, height = size_inches, scaling = scaling)
     
-    grid.table(table)  #render table into grid
+    if (!is.null(title)) {
+        # Create a title grob with the calculated vjust
+        title_grob <- textGrob(
+            title, 
+            gp = gpar(fontsize = 14, fontface = "bold"),
+            vjust = vjust
+        )
+        
+        # arrange title and table heights in the output
+        grid.arrange(title_grob, tableGrob(table), heights = c(1, 10))
+    } else {
+        # avoid errors if no title
+        grid.table(table)
+    }
+    
     dev.off()  # close device
 }
+
 
 save_table_svg(
     results_df,
     here("figures", "table.svg"),
     size = 19, 
-    scaling = 1)
+    scaling = 1,
+    title = "Results Table of Binomial Logistic Model",
+    vjust = 18  # custom vertical for title independent of table
+)
 
 
 ```
+
+![](figures/table.svg)
+
+Here is the table, inserted as an image and available on GitHub.
 
 <br>
 
@@ -503,8 +526,6 @@ What is perhaps of more interest in the case of Body Mass in the table is the co
 I included the variable sex as if different sexes have to compete or if multiple mating occurs, this could influence the sexes' chances of completing a clutch. The model does not indicate any consistent difference between the sexes when looking at sex interspecifically. The general trend is that being male lowers the probability of clutch completion, however this is not statistically significant. Here it has a wide confidence interval which intersects 1. A separate analysis may want to look for species-sex interactions, as you could imagine such behaviours being species specific.
 
 For species, we can imagine different ecologies contributing to different clutch survivals. Perhaps the Chinstrap is able to dominate Adelie for a preferable niche if they coexist. Alternatively, Chinstrap penguins could be more k-selected than Adelie, although the larger body size of Gentoo penguins while simultaneously not being more liekly to have a successful clutch is a reason to doubt this.
-
-<br>
 
 The model met most of its assumptions. The independence would have been better if sampling had not taken place in such short time-windows. We could imagine a scenario where different life-histories mean Chinstrap clutches are more firmly established as complete at a later point than December when these species are consistently being sampled, for example if offspring morality is far higher some time after clutch completion but before adulthood.
 
