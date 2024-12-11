@@ -29,7 +29,7 @@ knitr::opts_chunk$set(echo = TRUE) #this makes the document default to have echo
 
 ### a) Provide your figure here:
 
-```{r bad figure code, echo=FALSE, message=FALSE, warning=FALSE, results="hide"}
+```{r bad figure, echo=FALSE, message=FALSE, warning=FALSE, results="hide"}
 
 # Make sure your figure is visible after you knit it. 
 
@@ -162,7 +162,7 @@ The data features various pieces of information gathered on three species of Pen
 
 I start by loading the libraries we will be using. To protect the environment, I will be using renv(). This is a package that ensures the packages we use have a record of which version was being used at the time we write our code. This prevents subsequent updates to packages from affecting our code's functionality.
 
-I considered loading packages in a separate file and importing them with source(); however, opt not to as, despite keeping the code marginally cleaner, readers are forced to open an additional file and reduces the level of self-containment from the .Rmd file. Users can then use renv::status() to ensure the packages are correctly loaded in a consistent state.
+I considered loading packages in a separate file and importing them with source(); however, am opting not to as, despite keeping the code marginally cleaner, readers are forced to open an additional file and reduces the level of self-containment from the .Rmd file. Users can then use renv::status() to ensure the packages are correctly loaded in a consistent state.
 
 ```{r Libraries, echo=TRUE, message=FALSE, warning=FALSE}
 # Make sure your code prints.
@@ -183,7 +183,9 @@ library(gridExtra)
 renv::status()
 ```
 
-On to the data itself. This was downloaded from Canvas and placed in a file, created and named "data". I could load the data from the "palmerpenguins" package. However, more often in reality we will be loading data from files rather than R packages. Hence, I push the file to my GitHub Repository. If someone downloads the repository, this should be perfectly functional. I then like to look at the data.
+On to the data itself. This was downloaded and placed in the file "data". We could load the data from the "palmerpenguins" package. More often in reality we will be loading data from files rather than R packages. Hence, I push the file to my GitHub Repository. If someone downloads the repository, this should be functional and more realistic.
+
+I can then visualize the data with the read_csv() function, contained in tidyverse and producing a "tibble". Tibbles are a "modern take on data frames" (R Core Team, 2024). The here() function avoids privacy concerns by sidestepping entering file directories and improves operating system cross-compatibility.
 
 ```{r Data Exploration}
 penguins_raw <- suppressMessages(read_csv(here("data", "penguins_raw.csv"), show_col_types = FALSE))
@@ -191,15 +193,13 @@ penguins_raw <- suppressMessages(read_csv(here("data", "penguins_raw.csv"), show
 head(penguins_raw)
 ```
 
-This uses the read_csv() function, contained in tidyverse and producing a "tibble". Tibbles are a "modern take on data frames" (R Core Team, 2024). The here() function avoids privacy concerns by sidestepping entering file directories and improves operating system cross-compatibility.
-
-Next in the pipeline, we can further familiarize ourselves with the data by looking at the column names
+Next in the pipeline, we can look specifically at the column names.
 
 ```{r}
 colnames(penguins_raw)
 ```
 
-It is apparent from the mixture of styles (e.g. camel case and sentence case) and abundance of error causing characters (e.g. spaces, brackets, and slashes) that we should clean our dataset. Here, it is important to resist the urge to edit the raw data, as this ruins reproducibility. Instead we should make a new dataset.
+It is apparent from the mixture of styles (e.g. camel case and sentence case) and abundance of error causing characters (e.g. spaces, brackets, and slashes) that we should clean our dataset. Here, it is important to resist the urge to edit the raw data, as this ruins reproducibility. Instead we should make a new cleaned dataset.
 
 ```{r data cleaning}
 source(here("functions", "cleaning.r"))
@@ -228,28 +228,13 @@ body_mass_clutch <- penguins_clean %>%
 
 ```
 
-Rather than using a boxplot, I have used a violin plot. This is another useful exploratory graph technique with a bigger focus on data distribution compared to a boxplot's focus on summary statistics. **Mistake. Exploratory figure must show raw data.**
-
--   
-
--   An exploratory figure shows the reader the raw data
-
--   
-
--   Before any modelling, you need to demonstrate the shape of the data
-
--   
-
--   This is a good way to check your data is looking as you expect
-
--   
+Rather than using a boxplot, I have used a violin plot. This is another useful exploratory graph technique with a bigger focus on data distribution compared to a boxplot's focus on summary statistics.
 
 ```{r explanatory figure}
 #combine data columns into one for colour coding the graph. Make new dataset to avoid overwriting
 
-body_mass_clutch_updated <- body_mass_clutch
-  
-body_mass_clutch_updated$species_clutch <- paste(body_mass_clutch$species, body_mass_clutch$clutch_completion, sep = "_")
+body_mass_clutch_updated <- transform(body_mass_clutch, 
+                                      species_clutch = paste(species, clutch_completion, sep = "_"))
   
   species_shades <- c(
     "Adelie_No" = "#006d4c",  
@@ -263,10 +248,10 @@ body_mass_clutch_updated$species_clutch <- paste(body_mass_clutch$species, body_
   
 violin_plot <- ggplot(body_mass_clutch_updated, aes(x = clutch_completion, y = body_mass_g, fill = species_clutch)) +
     geom_violin() +
-    stat_summary(fun = mean, geom = "crossbar", width = 0.9, linewidth = 0.2, color = "black") + # Add mean lines
+    stat_summary(fun = mean, geom = "crossbar", width = 0.9, linewidth = 0.2, color = "black") + # add mean lines
     facet_wrap(~species) +
     theme_minimal() +
-    scale_fill_manual(values = species_shades) + # Use custom color scheme for species and clutch completion
+    scale_fill_manual(values = species_shades) + # use custom color scheme
     labs(title = "Body Mass by Clutch Completion for Each Species",
          x = "Clutch Completion",
          y = "Body Mass (g)",
@@ -288,6 +273,16 @@ print(violin_plot)
 
 I considered adding the plotting code to a function file; however, since I am only asked to do this plot decided it is simpler to display the code in the document.
 
+I have done a number of steps related to communicating the data in a clear way. I begin by creating a new dataset (avoiding overwriting) with a new column that contains information on both the species and clutch completion. This allows me to colour plots individually down the line.
+
+I then code the plot itself. I begin by plotting the violin plot while faceting for species, a variable I see as likely important for weight independently and this is supported by the graph.
+
+As an exploratory figure, I employ `geom_jitter()` to show the raw data along with setting a seed for reproducibility.
+
+`stat_summary` is used to add the mean, which I feel is a helpful visual comparison.
+
+We can see from the figure that Gentoo penguins tend to be much bigger. And that in all three species the majority of penguins complete a clutch, seen from the greater number of data points in each "Yes" position. The means do not appear to be visually very different.
+
 We should now save the exploratory figure.
 
 ```{r saving explanatory figure}
@@ -306,23 +301,27 @@ save_plot_svg(violin_plot,
                        size = 19, scaling = 1.5)
 ```
 
-Describe making plot. Used function. Made to fit computer screen.
+I used a function covered in the computer class. I then used the function to save the plot, setting the size with viewing the graph full-screen on a computer in mind.
 
-### Hypothesis
+### Hypotheses
 
-$\text{H}_0 :$ There is no significant difference in clutch completion according to body mass.
+$\text{H}_0 :$ There is no significant difference in the probability of clutch completion according to body mass.
 
-$\text{H}_{a1} :$ Penguins with greater body mass have significantly higher clutch completions.
+$\text{H}_{a1} :$ Penguins with greater body mass have significantly higher probability of clutch completions.
 
-$\text{H}_{a2} :$ Penguins with greater body mass have significantly lower clutch completions.
+$\text{H}_{a2} :$ Penguins with greater body mass have significantly probability of lower clutch completions.
 
 ### Statistical Methods
 
-I will model the data using a binomial logistic regression with clutch_completion as the response variable.
+I model the data using a binomial logistic regression with clutch_completion as the response variable.
+
+$$\\ln\left(\frac{p_i}{1 - p_i}\right) = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \dots + \beta_n X_n$$
+
+I include the variables sex and species. For species, we can imagine different ecologies contributing to different clutch survivals. Perhaps the larger Gentoo is able to dominate a preferable niche of they coexist. For sex, if different sexes have to compete or if multiple mating occurs, this could influence the sexes' chances of completing a clutch. Controlling for these potential influences should improve the power of the model.
 
 ```{r Statistics}
 #convert completion into 1 = yes, 0 = no.
-body_mass_clutch$clutch_completion_binary <- ifelse(body_mass_clutch$clutch_completion == "Yes", 1, 0) # new column to avoid over
+body_mass_clutch$clutch_completion_binary <- ifelse(body_mass_clutch$clutch_completion == "Yes", 1, 0) # new column to allow binomial logistic model 
 
 logistic_regression_model <- glm(clutch_completion_binary ~ body_mass_g + sex + species, 
              family = binomial(link = "logit"), 
@@ -333,35 +332,35 @@ summary(logistic_regression_model)
 
 ```
 
-The initial results indicate that there is no significant effect of
+Next I check for multicollinearity, as sexes and species can tend to be bigger, which would make our model results appear stronger than they should through a form of double counting.
 
 ```{r}
 vif(logistic_regression_model)
 ```
 
-This indicates moderate multicollinearity between factors, especially body_mass_g. However, it is not so extreme as to exclude any variables from the model. Instead we should be cautious to consider multicollinearities potential bias when interpreting the model.
+This indicates moderate multicollinearity between factors, especially with body mass. It is not so extreme as to neccessitate excluding any variables from the model. Instead we should be cautious to consider multicollinearity's potential bias when interpreting the model.
+
+To check for over-fitting, I will use a stepwise test to remove non-significant factors based on AIC criteria. As this model contains fairly few factors with a reasonable number of samples, this is unlikely to be a major concern. It is worth putting in our pipeline process, however, as a good habit.
 
 ```{r}
 stepwise_model <- stepAIC(logistic_regression_model, direction = "both")
 summary(stepwise_model)
 ```
 
-Similarly, when verifying our results by performing selection to ensure there is no over-fitting, We see that Species is the only significant factor in determining clutch completion that we included in our model.
-
-Model AIC nearly identical.
+In both the selected model and the full model, the comparison between Adelie and Gentoo clutch completion success is the only statistically significant factor for predicting clutch completion according to both models. As the AIC scores are nearly identical in each, I will focus my discussion on the full model.
 
 ### Results & Discussion
 
-Because the AIC values for my full model and selected model are nearly identical I will plot and then discuss the results from the full model.
+"*A results figure demonstrates the stats method chosen, and includes the results of the stats test or model."*
 
 ```{r Plotting Results, message=FALSE}
 
 # Make sure your code prints. 
 
 # Extract coefficients and standard errors
-coefficients <- summary(logistic_regression_model)$coefficients
-odds_ratios <- exp(coefficients[, "Estimate"])  # Convert log-odds to odds ratios
-conf_int <- exp(confint(logistic_regression_model))  # Confidence intervals for odds ratios
+coefficients <- summary(logistic_regression_model)$coefficients #extract coefficients 
+odds_ratios <- exp(coefficients[, "Estimate"])  #find odds-ratios by taking exponential
+conf_int <- exp(confint(logistic_regression_model))  # confidence intervals for odds ratios
 
 results_df <- data.frame(
     Name = c(
@@ -398,22 +397,27 @@ results_df
 
 Saving table
 
-```{r}
-# Save the table as an SVG
+```{r saving table as SVG}
 
 
+save_table_svg <- function(table, filename, size, scaling) {
+    size_inches = size / 2.54  # inch to cm
+    svglite(filename, width = size_inches, height = size_inches, scaling = scaling)
+    
+    grid.table(table)  #render table into grid
+    dev.off()  # close device
+}
 
-svglite(here("figures","results_table.svg", width = 8, height = 4))  # Set dimensions
-grid.table(results_df)  # Render the table as a grid
-dev.off()  # Close the SVG devic
-
-
-save_plot_svg(results_df, 
-                       here("figures", "table.svg"), 
-                       size = 19, scaling = 1.5)
+save_table_svg(
+    results_df,
+    here("figures", "table.svg"),
+    size = 19, 
+    scaling = 1)
 
 
 ```
+
+The initial results indicate that there is no statistically significant effect of body mass on clutch completion. The probability our ratio of successes to failures occurred by random chance is 0.0940.
 
 ### Conclusion
 
