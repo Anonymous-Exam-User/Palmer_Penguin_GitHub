@@ -1,8 +1,8 @@
 ---
-title: "Assignment Template"
+title: "Homework Sumbission"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 date: "2024-11-08"
 ---
 
@@ -29,18 +29,40 @@ knitr::opts_chunk$set(echo = TRUE) #this makes the document default to have echo
 
 ### a) Provide your figure here:
 
-```{r bad figure code, echo=FALSE}
+```{r bad figure code, echo=FALSE, message=FALSE, warning=FALSE, results="hide"}
 
 # Make sure your figure is visible after you knit it. 
 
-ggplot(data = penguins_clean, aes(x = date_egg, y = body_mass_g)) +
+library(here)
+library(tidyverse)
+library(janitor)
+library(dplyr)
+library(knitr) 
+library(rmarkdown) 
+library(here) 
+library(tidyverse) 
+library(janitor)
+library(ggplot2)
+
+source(here("functions", "cleaning.r"))
+
+penguins_untidy <- read_csv(here("data", "penguins_raw.csv"))
+
+penguins_tidy <- penguins_untidy %>%
+  cleaning_columns() %>% #automatically snake case
+  shorten_species() %>%
+  remove_empty_columns_rows() %>% 
+  remove_NA() 
+
+
+ggplot(data = penguins_tidy, aes(x = date_egg, y = body_mass_g)) +
   stat_smooth(method = "lm", se = FALSE, color = "darkred", 
               geom = "line", 
-              size = 1,  # Increase line thickness
+              linewidth = 1,  # Increase line thickness
               arrow = arrow(length = unit(0.2, "cm"), ends = "last", type = "closed")) +
   geom_point(color = "darkred", alpha = 0.2) +
   coord_fixed(ratio = 2) +
-  theme_minimal() +
+  theme_bw() +
   theme(axis.text.y = element_blank()) +
   scale_y_continuous() +
   coord_cartesian(ylim = c(4150, 4300)) +
@@ -60,7 +82,7 @@ ggplot(data = penguins_clean, aes(x = date_egg, y = body_mass_g)) +
 
 ### b) Write about how your design choices mislead the reader about the underlying data (100-300 words).
 
-Imagine a scenario where I am in an argument with Chef Smith in my Antarctic field station. I devise a plan to get them fired by convincing the public that their food waste is causing an obesity epidemic around the Palmer Station, Antarctica LTER. Taking to twitter, I share the above graph.
+Imagine a scenario where I am in an argument with Chef Smith, who was hired at the start of 2008 to my Antarctic field station workplace. I devise a plan to get them fired by convincing the public that their food waste is causing an obesity epidemic around the Palmer Station, Antarctica LTER. Taking to twitter, I share the above graph.
 
 Points of deception:
 
@@ -68,13 +90,11 @@ Points of deception:
 
 -   I am only using the species Gentoo, but extrapolating to all Palmer Penguin's in the title. In fact, Adelie Penguins have gotten smaller since Chef Smith's arrival. (N.B. I am taking the graph title and axis labels to be "visual elements").
 
--   I have elected to make the line red, a colour commonly associated with negatives. This helps as there is no clear backing that the weight "increase" is really a negative.
+-   I have elected to make the line red, a colour commonly associated with negatives. This aims to distract from the fact that weight increase isn't intrinsically negative.
 
--   I have made the line an arrow, in the hopes that it will convince of a continued projected increase should Chef Smith remain employed.
+-   I have made the line an arrow. This aims at convincing the reader of a continued projected increase should Chef Smith remain employed.
 
--   Rather than labelling with the objective "Date", I have drawn attention to how time relates to my intended point.
-
--   I have used the code "coord_fixed(ratio = 10)" which stretches the graph vertically and hugely exaggerates the steepness of the line.
+-   Rather than labeling with the objective "Date", I have drawn attention to how time relates to my intended point.
 
 -   I have used the code "coord_fixed(ratio = 10)" which stretches the graph vertically and hugely exaggerates the steepness of the line.
 
@@ -92,9 +112,9 @@ Points of deception:
 
 *Your code should include the steps practiced in the lab session:*
 
-Written in the structure of a paper.
+*Written in the structure of a scientific paper.*
 
--   Load the data
+-   *Load the data*
 -   *Appropriately clean the data*
 -   *Create an Exploratory Figure (**not a boxplot**)*
 -   *Save the figure*
@@ -144,31 +164,31 @@ I start by loading the libraries we will be using. To protect the environment, I
 
 I considered loading packages in a separate file and importing them with source(); however, opt not to as, despite keeping the code marginally cleaner, readers are forced to open an additional file and reduces the level of self-containment from the .Rmd file. Users can then use renv::status() to ensure the packages are correctly loaded in a consistent state.
 
-```{r Data Exploration, echo=TRUE}
-
-
-
+```{r Libraries, echo=TRUE, message=FALSE, warning=FALSE}
 # Make sure your code prints.
 
-#i.e use echo
-
-
-library("renv") 
-library("knitr") 
-library("rmarkdown") 
-library("here") 
-library("tidyverse") 
-library("janitor")
+library(renv) 
+library(knitr) 
+library(rmarkdown) 
+library(here) 
+library(tidyverse) 
+library(janitor)
+library(tinytex)
+library(svglite)
+library(ragg)
+library(car)
+library(MASS)
+library(gridExtra)
 
 renv::status()
 ```
 
-On to the data itself. This was downloaded from Canvas and placed in a file, created and named "data". I could load the data from the "palmerpenguins" package. However, more often in reality we will be loading data from files rather than R packages. Hence, I push the file to my GitHub Repository. If someone downloads the repository, this should be perfectly functional. I then like to look at the data in full.
+On to the data itself. This was downloaded from Canvas and placed in a file, created and named "data". I could load the data from the "palmerpenguins" package. However, more often in reality we will be loading data from files rather than R packages. Hence, I push the file to my GitHub Repository. If someone downloads the repository, this should be perfectly functional. I then like to look at the data.
 
-```{r echo=TRUE}
-penguins_raw <- read_csv(here("data", "penguins_raw.csv"))
+```{r Data Exploration}
+penguins_raw <- suppressMessages(read_csv(here("data", "penguins_raw.csv"), show_col_types = FALSE))
 
-View(penguins_raw)
+head(penguins_raw)
 ```
 
 This uses the read_csv() function, contained in tidyverse and producing a "tibble". Tibbles are a "modern take on data frames" (R Core Team, 2024). The here() function avoids privacy concerns by sidestepping entering file directories and improves operating system cross-compatibility.
@@ -181,18 +201,14 @@ colnames(penguins_raw)
 
 It is apparent from the mixture of styles (e.g. camel case and sentence case) and abundance of error causing characters (e.g. spaces, brackets, and slashes) that we should clean our dataset. Here, it is important to resist the urge to edit the raw data, as this ruins reproducibility. Instead we should make a new dataset.
 
-```{r}
+```{r data cleaning}
 source(here("functions", "cleaning.r"))
 
 penguins_clean <- penguins_raw %>%
   cleaning_columns() %>% #automatically snake case
   shorten_species() %>%
   remove_empty_columns_rows() %>% 
-  remove_NA() %>% # by removing NA, the previous numbers become misaligned, and Tibble handles it automatically. 
-  select(-x1) # remove column "x1"
-  select(-sample_number)
-
-View(penguins_clean)
+  remove_NA() 
 
 colnames(penguins_clean)
 
@@ -202,26 +218,95 @@ The above code begins by sourcing a file named "cleaning.r" from within our dire
 
 -   *Create an Exploratory Figure (**not a boxplot**)*
 
-I'm interested in whether there is any relationship between the categorical variable "clutch_completion" and "body_mass_g". I expect this to naturally vary between species and sex, so want to control for those factors. I will assume that time and geographical factors are independent.
+I'm interested in whether there is any relationship between the categorical variable "clutch_completion" and "body_mass_g". More specifically, I am interested to look at whether body mass as an explanatory variable has any noticable influence on fitness, which I will use clutch completion as a proxy for. I expect this to naturally vary between species and sex, so want to control for those factors. I will assume that time and geographical factors are independent.
 
-"(21) Subset the Data
+Next in my data pipeline, I will subset the data into these factors of interest with the `select()` function
 
-As part of data pipelines, we often want to subset the data for plotting or analysis. We may only want to look at two columns, the species and the body mass. We can do this by using the `select()` function."
-
-```{r}
+```{r data subset}
 body_mass_clutch <- penguins_clean %>%
-  select(species, body_mass_g, sex, clutch_completion) 
+  dplyr::select(species, body_mass_g, sex, clutch_completion) #specify package as MASS has conflict
 
-ggplot(body_mass_clutch, aes(x = clutch_completion, y = body_mass_g, fill = clutch_completion)) +
-  geom_boxplot() +
-  facet_wrap(~species) +
-  theme_minimal() +
-  scale_fill_brewer(palette = "Set3") + # change color palette
-  labs(title = "Body Mass by Clutch Completion for Each Species",
-       x = "Clutch Completion",
-       y = "Body Mass (g)",
-       fill = "Clutch Completion")
 ```
+
+Rather than using a boxplot, I have used a violin plot. This is another useful exploratory graph technique with a bigger focus on data distribution compared to a boxplot's focus on summary statistics. **Mistake. Exploratory figure must show raw data.**
+
+-   
+
+-   An exploratory figure shows the reader the raw data
+
+-   
+
+-   Before any modelling, you need to demonstrate the shape of the data
+
+-   
+
+-   This is a good way to check your data is looking as you expect
+
+-   
+
+```{r explanatory figure}
+#combine data columns into one for colour coding the graph. Make new dataset to avoid overwriting
+
+body_mass_clutch_updated <- body_mass_clutch
+  
+body_mass_clutch_updated$species_clutch <- paste(body_mass_clutch$species, body_mass_clutch$clutch_completion, sep = "_")
+  
+  species_shades <- c(
+    "Adelie_No" = "#006d4c",  
+    "Adelie_Yes" = "#66c2a4", 
+    "Chinstrap_No" = "#ff8c66",  
+    "Chinstrap_Yes" = "#ffb399", 
+    "Gentoo_No" = "#c653c6",  
+    "Gentoo_Yes" = "#ecc6ec"
+  )
+  
+  
+violin_plot <- ggplot(body_mass_clutch_updated, aes(x = clutch_completion, y = body_mass_g, fill = species_clutch)) +
+    geom_violin() +
+    stat_summary(fun = mean, geom = "crossbar", width = 0.9, linewidth = 0.2, color = "black") + # Add mean lines
+    facet_wrap(~species) +
+    theme_minimal() +
+    scale_fill_manual(values = species_shades) + # Use custom color scheme for species and clutch completion
+    labs(title = "Body Mass by Clutch Completion for Each Species",
+         x = "Clutch Completion",
+         y = "Body Mass (g)",
+         fill = "Species and Clutch Completion") + 
+    theme_bw() +
+    theme(
+      legend.position = "none",
+      strip.text = element_text(size = 12),
+      ) +
+  geom_jitter(
+        aes(color = ),
+        alpha = 0.1,
+        show.legend = FALSE, 
+        position = position_jitter(width = 0.2, seed = 0)) # seed number to add reproducibility
+
+print(violin_plot)
+
+```
+
+I considered adding the plotting code to a function file; however, since I am only asked to do this plot decided it is simpler to display the code in the document.
+
+We should now save the exploratory figure.
+
+```{r saving explanatory figure}
+save_plot_svg <- function(plot, 
+                                  filename, size, scaling){
+    size_inches = size/2.54
+    svglite(filename, width   = size_inches, 
+                      height  = size_inches, 
+                      scaling = scaling)
+    print(plot)
+    dev.off()
+}
+
+save_plot_svg(violin_plot, 
+                       here("figures", "violin_plot.svg"), 
+                       size = 19, scaling = 1.5)
+```
+
+Describe making plot. Used function. Made to fit computer screen.
 
 ### Hypothesis
 
@@ -233,14 +318,11 @@ $\text{H}_{a2} :$ Penguins with greater body mass have significantly lower clutc
 
 ### Statistical Methods
 
-It should be possible to run a binomial logistic regression with clutch_completion as the response variable.
+I will model the data using a binomial logistic regression with clutch_completion as the response variable.
 
 ```{r Statistics}
 #convert completion into 1 = yes, 0 = no.
 body_mass_clutch$clutch_completion_binary <- ifelse(body_mass_clutch$clutch_completion == "Yes", 1, 0) # new column to avoid over
-
-View(body_mass_clutch)
-
 
 logistic_regression_model <- glm(clutch_completion_binary ~ body_mass_g + sex + species, 
              family = binomial(link = "logit"), 
@@ -251,26 +333,85 @@ summary(logistic_regression_model)
 
 ```
 
+The initial results indicate that there is no significant effect of
+
 ```{r}
-library(car)
 vif(logistic_regression_model)
 ```
 
 This indicates moderate multicollinearity between factors, especially body_mass_g. However, it is not so extreme as to exclude any variables from the model. Instead we should be cautious to consider multicollinearities potential bias when interpreting the model.
 
 ```{r}
-library(MASS)
 stepwise_model <- stepAIC(logistic_regression_model, direction = "both")
 summary(stepwise_model)
 ```
 
-Similarly, when veryifying our results by performing selection to ensure there is no overfitting, We see that Species is the only significant factor in determining clutch completion that we included in our model.
+Similarly, when verifying our results by performing selection to ensure there is no over-fitting, We see that Species is the only significant factor in determining clutch completion that we included in our model.
+
+Model AIC nearly identical.
 
 ### Results & Discussion
 
-```{r Plotting Results}
+Because the AIC values for my full model and selected model are nearly identical I will plot and then discuss the results from the full model.
+
+```{r Plotting Results, message=FALSE}
 
 # Make sure your code prints. 
+
+# Extract coefficients and standard errors
+coefficients <- summary(logistic_regression_model)$coefficients
+odds_ratios <- exp(coefficients[, "Estimate"])  # Convert log-odds to odds ratios
+conf_int <- exp(confint(logistic_regression_model))  # Confidence intervals for odds ratios
+
+results_df <- data.frame(
+    Name = c(
+    "Intercept",
+    "Body Mass (grams)",
+    "Male (vs Female)",
+    "Chinstrap (vs Adelie)",
+    "Gentoo (vs Adelie)"
+  ),
+  Odds_Ratio = odds_ratios,
+  CI_Lower = conf_int[, 1],
+  CI_Upper = conf_int[, 2],
+  p_value = coefficients[, "Pr(>|z|)"],
+  stringsAsFactors = FALSE  # Ensure character data is not converted to factors
+)
+
+results_df$Odds_Ratio <- formatC(results_df$Odds_Ratio, format = "f", digits = 3)
+results_df$CI_Lower <- formatC(results_df$CI_Lower, format = "f", digits = 3)
+results_df$CI_Upper <- formatC(results_df$CI_Upper, format = "f", digits = 3)
+results_df$p_value <- formatC(results_df$p_value, format = "f", digits = 3)
+
+results_df$Significance <- cut(as.numeric(results_df$p_value),
+                               breaks = c(-Inf, 0.001, 0.01, 0.05, 0.1, Inf),
+                               labels = c("***", "**", "*", ".", " "))
+
+# Remove default row names
+rownames(results_df) <- NULL
+
+
+# View the new data frame
+results_df
+
+```
+
+Saving table
+
+```{r}
+# Save the table as an SVG
+
+
+
+svglite(here("figures","results_table.svg", width = 8, height = 4))  # Set dimensions
+grid.table(results_df)  # Render the table as a grid
+dev.off()  # Close the SVG devic
+
+
+save_plot_svg(results_df, 
+                       here("figures", "table.svg"), 
+                       size = 19, scaling = 1.5)
+
 
 ```
 
