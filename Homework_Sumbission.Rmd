@@ -1,9 +1,9 @@
 ---
 title: "Homework Sumbission"
 output:
-  html_document: default
-  word_document: default
   pdf_document: default
+  word_document: default
+  html_document: default
 date: "2024-11-08"
 ---
 
@@ -50,39 +50,40 @@ library(ggplot2)
 library(tinytex)
 
 source(here("functions", "cleaning.r"))
-
+  
 penguins_untidy <- read_csv(here("data", "penguins_raw.csv"))
-
+  
 penguins_tidy <- penguins_untidy %>%
-  cleaning_columns() %>% #automatically snake case
-  shorten_species() %>%
-  remove_empty_columns_rows() %>% 
-  remove_NA() 
-
-
+    cleaning_columns() %>% #automatically snake case
+    shorten_species() %>%
+    remove_empty_columns_rows() %>% 
+    remove_NA() 
+  
+  
 ggplot(data = penguins_tidy, aes(x = date_egg, y = body_mass_g)) +
-  stat_smooth(method = "lm", se = FALSE, color = "darkred", 
-              geom = "line", 
-              linewidth = 1,  # Increase line thickness
-              arrow = arrow(length = unit(0.2, "cm"), ends = "last", type = "closed")) +
-  geom_point(color = "darkred", alpha = 0.2) +
-  coord_fixed(ratio = 2) +
-  theme_bw() +
-  theme(axis.text.y = element_blank()) +
-  scale_y_continuous() +
-  coord_cartesian(ylim = c(4150, 4300)) +
-
-    scale_x_date(
-    breaks = as.Date(c("2008-01-01", "2008-07-01", "2009-01-01", "2009-07-01", "2010-01-01")),
-    labels = c(expression(bold("2008-01")), "2008-07", "2009-01", "2009-07", "2010-01")
-  ) +
-  labs(
+    stat_smooth(method = "lm", se = FALSE, color = "darkred", 
+                geom = "line", 
+                linewidth = 1,  # Increase line thickness
+                arrow = arrow(length = unit(0.2, "cm"), ends = "last", type = "closed")) +
+    geom_point(color = "darkred", alpha = 0.2) +
+    coord_fixed(ratio = 2) +
+    theme_bw() +
+    theme(axis.text.y = element_blank()) +
+    scale_y_continuous() +
+    coord_cartesian(ylim = c(4150, 4300)) +
+  
+      scale_x_date(
+      breaks = as.Date(c("2008-01-01", "2008-07-01", "2009-01-01", "2009-07-01", "2010-01-01")),
+      labels = c(expression(bold("2008-01")), "2008-07", "2009-01", "2009-07", "2010-01"),
+      expand = expansion(mult = c(0.05, 0.09)) # padding on both ends of the x-axis
+    ) +
+    labs(
     title = "Palmer Penguin Body Mass over Time",
     x = "Time since Chef Smith's Arrival",
     y = "Body Mass (g)"
   )
 
-#^fix X-axis cut-off >55 words too long
+#55 words too long
 ```
 
 <br>
@@ -107,7 +108,7 @@ Points of deception:
 
 -   I have made the individual label 2008-01 bold. I did this while ensuring the axes remain the same as when they are entered in a repeatable manner, so it remains technically "correct". The intended effect is to again call attention to the false association between Chef Smith's arrival and increased penguin body mass.
 
--   I used scale_y_continuous() along with coord_cartesian(ylim = c(x1, x2)). This enabled me to manipulate the y axis, while coord_cartesian() ensured that the "zoom effect" excludes the data points from the graph but not the lm(). This circumvents an issue where it looks too obviously fabricated without any data visible.
+-   I used `scale_y_continuous()` along with `coord_cartesian(ylim = c(x1, x2))`. This enabled me to manipulate the y axis, while `coord_cartesian()` ensured that the "zoom effect" excludes the data points from the graph but not the `lm()`. This circumvents an issue where it looks too obviously fabricated without any data visible.
 
 <br>
 
@@ -200,7 +201,7 @@ The above code begins by sourcing a file named `cleaning.r` from within our dire
 
 #### *Create an Exploratory Figure*
 
-I'm interested in whether there is any relationship between the categorical variable "clutch_completion" and "body_mass_g". More specifically, I am interested to look at whether body mass as an explanatory variable has any noticable influence on fitness, which I will use clutch completion as a proxy for. I expect this to naturally vary between species and sex, so want to control for those factors. I will assume that time and geographical factors are independent.
+I'm interested in whether there is any relationship between the categorical variable `clutch_completion` and `body_mass_g`. More specifically, I am interested to look at whether body mass as an explanatory variable has any noticeable influence on fitness, which I will use clutch completion as a proxy for. I expect this to naturally vary between species and sex, so want to control for those factors. I will assume that time and geographical factors are independent.
 
 Next in my data pipeline, I will subset the data into these factors of interest with the `select()` function
 
@@ -265,7 +266,7 @@ As an exploratory figure, I employ `geom_jitter()` to show the raw data along wi
 
 `stat_summary` is used to add the mean, which I feel is a helpful visual comparison.
 
-We can see from the figure that Gentoo penguins tend to be much bigger. And that in all three species the majority of penguins complete a clutch, seen from the greater number of data points in each "Yes" position. The means do not appear to be visually very different.
+We can see from the figure that Gentoo penguins tend to be much bigger. And that in all three species the majority of penguins complete a clutch, seen from the greater number of data points in each `Yes` position. The means do not appear to be visually very different.
 
 <br>
 
@@ -334,7 +335,7 @@ I start with with multicollinearity. Sexes and species can tend to be collinear 
 vif(logistic_regression_model)
 ```
 
-The variance inflation factors (`vif()`) indicate moderate multicollinearity between body mass and the other two factors. It is not so extreme as to neccessitate excluding any variables from the model. Instead we should be cautious to consider multicollinearity's potential bias when interpreting the model.
+The variance inflation factors (`vif()`) indicate moderate multicollinearity between body mass and the other two factors. It is not so extreme as to necessitate excluding any variables from the model. Instead we should be cautious to consider multicollinearity's potential bias when interpreting the model.
 
 <br>
 
@@ -462,11 +463,11 @@ Next I will make a new function to save the table. This requires the additional 
 
 
 save_table_svg <- function(table, filename, size, scaling, title = NULL, vjust = NULL) {
-    size_inches = size / 2.54  # Convert cm to inches
+    size_inches = size / 2.54  # convert cm to inches
     svglite(filename, width = size_inches, height = size_inches, scaling = scaling)
     
     if (!is.null(title)) {
-        # Create a title grob with the calculated vjust
+        # create a title grob with the calculated vjust
         title_grob <- textGrob(
             title, 
             gp = gpar(fontsize = 14, fontface = "bold"),
@@ -490,10 +491,7 @@ save_table_svg(
     size = 19, 
     scaling = 1,
     title = "Results Table of Binomial Logistic Model",
-    vjust = 18  # custom vertical for title independent of table
-)
-
-
+    vjust = 18)  # custom vertical for title independent of table
 ```
 
 ![](figures/table.svg)
@@ -506,7 +504,7 @@ Here is the table, inserted as an image and available on GitHub.
 
 The results show that there is no statistically significant effect of body mass on clutch completion. The probability our ratio of successes to failures occurred by random chance is 0.0940.
 
-What is perhaps of more interest in the case of Body Mass in the table is the confidence intervals. They are extremely narrow around an odds-ratio = 1. This indicates that even if our result were significant statistically, the biological significance would nevertheless be negligable, as an odds-ratio of 1 is indicative of their being no difference in the probability. So if our result is significant, but significantly equal to the ratio being 1.001, this is such a minor improvement of clutch success that it should nevertheless be ignored.
+What is perhaps of more interest in the case of Body Mass in the table is the confidence intervals. They are extremely narrow around an odds-ratio = 1. This indicates that even if our result were significant statistically, the biological significance would nevertheless be negligible, as an odds-ratio of 1 is indicative of their being no difference in the probability. So if our result is significant, but significantly equal to the ratio being 1.001, this is such a minor improvement of clutch success that it should nevertheless be ignored.
 
 I included the variable sex as if different sexes have to compete or if multiple mating occurs, this could influence the sexes' chances of completing a clutch. The model does not indicate any consistent difference between the sexes when looking at sex interspecifically. The general trend is that being male lowers the probability of clutch completion, however this is not statistically significant. Here it has a wide confidence interval which intersects 1. A separate analysis may want to look for species-sex interactions, as you could imagine such behaviours being species specific.
 
