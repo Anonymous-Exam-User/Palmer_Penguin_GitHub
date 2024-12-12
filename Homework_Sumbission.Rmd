@@ -2,12 +2,14 @@
 title: "Homework Sumbission"
 output:
   html_document: default
+  word_document: default
   pdf_document: default
 date: "2024-11-08"
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE) #this makes the document default to have echo = TRUE
+options(tinytex.verbose = TRUE)
 ```
 
 *The following is a template .rmd RMarkdown file for you to use for your homework submission.*
@@ -45,6 +47,7 @@ library(here)
 library(tidyverse) 
 library(janitor)
 library(ggplot2)
+library(tinytex)
 
 source(here("functions", "cleaning.r"))
 
@@ -111,24 +114,6 @@ Points of deception:
 ------------------------------------------------------------------------
 
 ## QUESTION 2: Data Analysis Pipeline
-
-*Write a data analysis pipeline.*
-
-*You should be aiming to write a clear explanation of the steps as well as clear code.*
-
-*Your code should include the steps practiced in the lab session:*
-
-*Written in the structure of a scientific paper.*
-
-*Between your code, communicate clearly what you are doing and why.*
-
-*You will be marked on the following:*
-
-1.  Your code for readability and functionality
-
-2.  Your figures for communication
-
-3.  Your text communication of your analysis
 
 ------------------------------------------------------------------------
 
@@ -370,7 +355,7 @@ In both the selected model and the full model, the comparison between Adelie and
 
 <br>
 
-##### Independence 
+##### Independence
 
 To check for independence, it can often be useful to plot collection against time.
 
@@ -469,7 +454,7 @@ The above code begins by extracting the relevant estimates, covered in [Statisti
 
 <br>
 
-##### Saving table 
+##### Saving table
 
 Next I will make a new function to save the table. This requires the additional package `gridExtra`.
 
@@ -561,7 +546,7 @@ Overall, we have been able to create a valid model which supports our null hypot
 
 -   *What elements of your partner's code helped you to understand and run their data pipeline?*
 
-My partner has extensively annotated their code, explaining what each line does in most cases. This helps understanding. By following the template, running their data follows a logical sequence.
+My partner has extensively annotated their code, explaining what each line does in most cases. This helps understanding. By following the template, running their data follows a logical sequence. YAML headers also help understand what each chunk is for.
 
 -   *Did it run? Did you need to fix anything?*
 
