@@ -2,8 +2,8 @@ cleaning_columns <- function(raw_data){
   raw_data %>% 
     dplyr::select(-Comments) %>% #later use of MASS package causes conflict. 
     dplyr::select(-starts_with ("Delta")) %>%  
-    clean_names() %>% 
-    print("Columns names have been cleaned with Delta and comment columns removed")
+    clean_names() #%>% 
+    #print("Columns names have been cleaned with Delta and comment columns removed")
   
 }
 
@@ -33,8 +33,8 @@ cleaning_columns <- function(raw_data){
 # eg lower case and snake case
 clean_column_names <- function(penguins_data) {
   penguins_data %>%
-    clean_names() %>% 
-    print("Columns names have been cleaned ")
+    clean_names() #%>% 
+    #print("Columns names have been cleaned ")
   
   
 }
@@ -42,8 +42,8 @@ clean_column_names <- function(penguins_data) {
 # A function to remove columns based on a vector of column names
 remove_columns <- function(penguins_data, column_names) {
   penguins_data %>%
-    dplyr::select(-starts_with(column_names)) %>% 
-    print("Specified columns have been removed")
+    dplyr::select(-starts_with(column_names)) #%>% 
+    #print("Specified columns have been removed")
   
 }
 
@@ -54,16 +54,16 @@ shorten_species <- function(penguins_data) {
       species == "Adelie Penguin (Pygoscelis adeliae)" ~ "Adelie",
       species == "Chinstrap penguin (Pygoscelis antarctica)" ~ "Chinstrap",
       species == "Gentoo penguin (Pygoscelis papua)" ~ "Gentoo"
-    )) %>% 
-    print("Species names have been shortened")
+    ))# %>% 
+    #print("Species names have been shortened")
   
 }
 
 # A function to remove any empty columns or rows
 remove_empty_columns_rows <- function(penguins_data) {
   penguins_data %>%
-    remove_empty(c("rows", "cols")) %>% 
-    print("Columns and Rows which were empty have been removed")
+    remove_empty(c("rows", "cols"))# %>% 
+    #print("Columns and Rows which were empty have been removed")
   
   
 }
@@ -72,6 +72,6 @@ remove_empty_columns_rows <- function(penguins_data) {
 # A function to remove rows which contain NA values
 remove_NA <- function(penguins_data) {
   penguins_data %>%
-    na.omit() %>% 
-    print("Rows containing NA values have been removed")
+    na.omit() #%>% 
+    #print("Rows containing NA values have been removed")
 }
