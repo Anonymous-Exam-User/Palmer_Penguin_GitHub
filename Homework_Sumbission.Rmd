@@ -549,7 +549,7 @@ I moved on to data preparation, which immediately gives an error:
 -temporary name too long
 ```
 
-I circumvented this by re-exracting the repo to my Documents file, instead of a deeply nested OneDrive file. This fixed the issue.
+I circumvented this by re-extracting the repo to my Documents file, instead of a deeply nested OneDrive file. This fixed the issue.
 
 When trying to run the data preparation chunk (line 134), it would not run when using the Run Current Chunk button. I was getting errors around text being part of the chunk. It was solved by adding a line break between the above section and the code chunk.
 
