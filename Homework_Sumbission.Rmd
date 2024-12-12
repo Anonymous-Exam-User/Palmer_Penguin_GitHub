@@ -1,9 +1,9 @@
 ---
 title: "Homework Sumbission"
 output:
-  html_document: default
-  word_document: default
   pdf_document: default
+  word_document: default
+  html_document: default
 date: "2024-11-08"
 ---
 
@@ -11,24 +11,9 @@ date: "2024-11-08"
 knitr::opts_chunk$set(echo = TRUE) #this makes the document default to have echo = TRUE
 ```
 
-*The following is a template .rmd RMarkdown file for you to use for your homework submission.*
-
-*Please Knit your .rmd to a PDF format or HTML and submit that with no identifiers like your name.*
-
-*To create a PDF, first install tinytex and load the package. Then press the Knit arrow and select "Knit to PDF".*
-
-<br>
-
 ## QUESTION 01: Data Visualisation for Science Communication
 
 *Create a figure using the Palmer Penguin dataset that is correct but badly communicates the data. **Do not make a boxplot**.*
-
-*Use the following references to guide you:*
-
--   [*https://www.nature.com/articles/533452a*](https://www.nature.com/articles/533452a){.uri}
--   [*https://elifesciences.org/articles/16800*](https://elifesciences.org/articles/16800){.uri}
-
-*Note: Focus on visual elements rather than writing misleading text on it.*
 
 ### a) Provide your figure here:
 
@@ -81,27 +66,25 @@ ggplot(data = penguins_tidy, aes(x = date_egg, y = body_mass_g)) +
     x = "Time since Chef Smith's Arrival",
     y = "Body Mass (g)"
   )
-
-#55 words too long
 ```
 
 <br>
 
 ### b) Write about how your design choices mislead the reader about the underlying data (100-300 words).
 
-Imagine a scenario where I am in an argument with Chef Smith, who was hired at the start of 2008 to my Antarctic field station workplace. I devise a plan to get them fired by convincing the public that their food waste is causing an obesity epidemic around the Palmer Station, Antarctica LTER. Taking to twitter, I share the above graph.
+Imagine a scenario where I am in an argument with Chef Smith, who was hired at the start of 2008 to my Antarctic field station workplace. I devise a plan to get them fired by convincing the public that their food waste is causing an obesity epidemic around Palmer Station, Antarctica LTER. Taking to twitter, I share the above graph.
 
 Points of deception:
 
--   I have started the graph from where the linear relationship begins, rather than 0 or another appropriate point. This exaggerates the steepness of the linear relationship, which would look almost negligible if seen as it should be.
+-   I have started the y-axis from where the linear relationship begins, rather than 0 or another appropriate point. This exaggerates the steepness of the linear relationship, which would look almost negligible if seen as it should be.
 
--   I am only using the species Gentoo, but extrapolating to all Palmer Penguin's in the title. In fact, Adelie Penguins have gotten smaller since Chef Smith's arrival. (N.B. I am taking the graph title and axis labels to be "visual elements").
+-   I am only using the species Gentoo, but extrapolating to all Palmer Penguins in the title. In fact, Adelie Penguins have got smaller since Chef Smith's arrival. (N.B. I am taking the graph title and axis labels to be "visual elements").
 
 -   I have elected to make the line red, a colour commonly associated with negatives. This aims to distract from the fact that weight increase isn't intrinsically negative.
 
 -   I have made the line an arrow. This aims at convincing the reader of a continued projected increase should Chef Smith remain employed.
 
--   Rather than labeling with the objective "Date", I have drawn attention to how time relates to my intended point.
+-   Rather than labeling with the objective "Date", I have drawn attention to unfairly influence the reader by measuring from time since Chef Smith's arrival.
 
 -   I have used the code "coord_fixed(ratio = 10)" which stretches the graph vertically and hugely exaggerates the steepness of the line.
 
@@ -117,19 +100,19 @@ Points of deception:
 
 ------------------------------------------------------------------------
 
-### Introduction
+### 1 Introduction
 
-#### What is the data?
+#### 1.1 What is the data?
 
-The data features various pieces of information gathered on three species of Penguins around the Palmer Station, Antarctica. Collected variables include geographical data, various morphological characteristics, and details on reproductive success.
+The data features various pieces of information gathered on three species of Penguins around Palmer Station, Antarctica. Collected variables include geographical data, various morphological characteristics, and details on reproductive success.
 
 <br>
 
-#### Load libraries
+#### 1.2 Load libraries
 
-I start by loading the libraries we will be using. To protect the environment, I will be using `renv()`. This is a package that ensures the packages we use have a record of which version was being used at the time we write our code. This prevents subsequent updates to packages from affecting our code's functionality.
+I start by loading the libraries we will be using. To protect the environment, I will be using `renv()`. It ensures the packages we use have a record of which version was being used at the time we write our code. This prevents subsequent updates to packages from affecting our code's functionality. Users can use `renv::status()` to ensure the packages are correctly loaded in a consistent state.
 
-I considered loading packages in a separate file and importing them with `source()`; however, am opting not to as, despite keeping the code marginally cleaner, readers are forced to open an additional file and reduces the level of self-containment from the .Rmd file. Users can then use `renv::status()` to ensure the packages are correctly loaded in a consistent state.
+I considered loading packages in a separate file and importing them with `source()`. However, I decided not because readers would then be forced to open an additional file which would reduced the level of transparency within the .Rmd file.
 
 ```{r Libraries, echo=TRUE, message=FALSE, warning=FALSE}
 # Make sure your code prints.
@@ -147,16 +130,15 @@ library(car)
 library(MASS)
 library(gridExtra)
 library(grid)
-library(kableExtra)
 
 renv::status()
 ```
 
 <br>
 
-#### Load data
+#### 1.3 Load and visualize data
 
-On to the data itself. This was downloaded and placed in the file `data`. We could load the data from the `palmerpenguins` package. More often in reality we will be loading data from files rather than R packages. Hence, I push the file to my GitHub Repository. If someone downloads the repository, this should be functional and more realistic.
+The data was loaded from the `palmerpenguins` package and then saved in the file `data`. Rather than repeating that process in the pipeline, I pushed the file to my GitHub Repository from where readers can download it. More often in practice, researchers will be downloading data rather loading it from R packages, making this a more applicable step in the pipeline.
 
 I can then visualize the data with the `read_csv()` function, contained in tidyverse and producing a "tibble". Tibbles are a "modern take on data frames" (R Core Team, 2024). The `here()` function avoids privacy concerns by sidestepping entering file directories and improves operating system cross-compatibility.
 
@@ -168,7 +150,7 @@ head(penguins_raw)
 
 <br>
 
-#### *Cleaning data*
+#### 1.4 Cleaning data
 
 Next in the pipeline, we can look specifically at the column names.
 
@@ -178,7 +160,7 @@ colnames(penguins_raw)
 
 <br>
 
-It is apparent from the mixture of styles (e.g. camel case and sentence case) and abundance of error causing characters (e.g. spaces, brackets, and slashes) that we should clean our dataset. Here, it is important to resist the urge to edit the raw data, as this ruins reproducibility. Instead we should make a new cleaned dataset.
+It is apparent from the mixture of styles (e.g. camel case and sentence case) and abundance of error-causing characters (e.g. spaces, brackets, and slashes) that we should clean our dataset. Here, it is important to resist the urge to edit the raw data, as this ruins reproducibility. Instead we should make a new cleaned dataset.
 
 ```{r data cleaning}
 source(here("functions", "cleaning.r"))
@@ -195,15 +177,15 @@ colnames(penguins_clean)
 
 <br>
 
-The above code begins by sourcing a file named `cleaning.r` from within our directory. It uses Dr France's functions for cleaning the data, which itself uses generic cleaning functions from the "janitor" package. By using `source()` and a separate file, we streamline our work by ensuring any functions which may be used multiple times in the project only need to be edited in one place. The code also makes use of a "pipe" (`%>%`), here styled as part of the `tidyverse` package. It is essentially equivalent to the instruction "and then".
+The above code begins by sourcing a file named `cleaning.r` from within our directory. It uses Dr France's functions for cleaning the data, which themselves use cleaning functions from the "janitor" package. By using `source()` and a separate file, we streamline our work by ensuring any functions which may be used multiple times in the project only need to be edited in one place. The code also makes use of a "pipe" (`%>%`), here styled as part of the `tidyverse` package. It is essentially equivalent to the instruction "and then".
 
 <br>
 
-#### *Create an Exploratory Figure*
+#### 1.5 Create an Exploratory Figure
 
-I'm interested in whether there is any relationship between the categorical variable `clutch_completion` and `body_mass_g`. More specifically, I am interested to look at whether body mass as an explanatory variable has any noticeable influence on fitness, which I will use clutch completion as a proxy for. I expect this to naturally vary between species and sex, so want to control for those factors. I will assume that time and geographical factors are independent.
+I am interested in whether there is any relationship between the categorical variable `clutch_completion` and `body_mass_g`. More specifically, I am interested in whether body mass as an explanatory variable has any noticeable influence on fitness, for which I will use clutch completion as a proxy. I expect this to naturally vary between species and sex, so want to control for those factors.
 
-Next in my data pipeline, I will subset the data into these factors of interest with the `select()` function
+Next in my data pipeline, I will subset the data into these factors of interest with the `select()` function.
 
 ```{r data subset}
 body_mass_clutch <- penguins_clean %>%
@@ -235,7 +217,6 @@ violin_plot <- ggplot(body_mass_clutch_updated, aes(x = clutch_completion, y = b
     geom_violin() +
     stat_summary(fun = mean, geom = "crossbar", width = 0.9, linewidth = 0.2, color = "black") + # add mean lines
     facet_wrap(~species) +
-    theme_minimal() +
     scale_fill_manual(values = species_shades) + # use custom color scheme
     labs(title = "Body Mass by Clutch Completion for Each Species",
          x = "Clutch Completion",
@@ -256,21 +237,23 @@ print(violin_plot)
 
 ```
 
-I considered adding the plotting code to a function file; however, since I am only asked to do this plot decided it is simpler to display the code in the document.
+I considered adding the plotting code to a function file. However, since I am only required to do this one plot, I decided it is simpler to display the code in the document.
 
-I have done a number of steps related to communicating the data in a clear way. I begin by creating a new dataset (avoiding overwriting) with a new column that contains information on both the species and clutch completion. This allows me to colour plots individually down the line.
+The code contains a number of steps to ensure the data is communicated in a clear way.
 
-I then code the plot itself. I begin by plotting the violin plot while faceting for species, a variable I see as likely important for weight independently and this is supported by the graph.
+-   I begin by creating a new dataset (avoiding overwriting) with a new column that contains information on both the species and clutch completion. This allows me to colour plots individually down the line.
 
-As an exploratory figure, I employ `geom_jitter()` to show the raw data along with setting a seed for reproducibility.
+-   I then code the plot itself. I begin by plotting the violin plot while faceting for species, a variable I see as likely important for weight independently and this is supported by the graph.
 
-`stat_summary` is used to add the mean, which I feel is a helpful visual comparison.
+-   As an exploratory figure, I employ `geom_jitter()` to show the raw data, along with setting a seed for reproducibility.
 
-We can see from the figure that Gentoo penguins tend to be much bigger. And that in all three species the majority of penguins complete a clutch, seen from the greater number of data points in each `Yes` position. The means do not appear to be visually very different.
+-   `stat_summary()` is used to add the mean, which I feel is a helpful visual comparison.
+
+We can see from the figure that Gentoo penguins tend to be larger. In all three species the majority of penguins complete a clutch, as is shown by the greater number of data points in each `Yes` position. Within each species, the mean body mass for successful clutch completion appears similar to unsuccessful cases.
 
 <br>
 
-#### *Save the exploratory figure.*
+#### 1.6 Save the exploratory figure.
 
 ```{r saving explanatory figure}
 save_plot_svg <- function(plot, 
@@ -288,27 +271,27 @@ save_plot_svg(violin_plot,
                        size = 19, scaling = 1.5)
 ```
 
-I used a function covered in the computer class. I then used the function to save the plot, setting the size with viewing the graph full-screen on a computer in mind.
+I used a function covered in the computer class. I then used the function to save the plot, setting the size to be optinal for viewing the graph full-screen on a computer.
 
 <br>
 
-### Hypotheses
+### 2 Hypotheses
 
-$\text{H}_0 :$ There is no significant difference in the probability of clutch completion according to body mass.
+$\text{H}_0 :$ Body mass has no significant effect on the probability of clutch completion.
 
-$\text{H}_{a1} :$ Penguins with greater body mass have significantly higher probability of clutch completions.
+$\text{H}_{a1} :$ Penguins with greater body mass have significantly higher probability of clutch completion.
 
-$\text{H}_{a2} :$ Penguins with greater body mass have significantly probability of lower clutch completions.
+$\text{H}_{a2} :$ Penguins with greater body mass have significantly lower probability of clutch completion.
 
 <br>
 
-### Statistical Methods
+### 3 Statistical Methods
 
-I model the data using a binomial logistic regression with clutch_completion as the response variable.
+I model the data using a binomial logistic regression with `clutch_completion` as the response variable.
 
 $$\\ln\left(\frac{p_i}{1 - p_i}\right) = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \dots + \beta_n X_n$$
 
-I include the variables sex and species as variables I consider potentially influencing clutch completion. Controlling for these potential influences could improve the power of the model.
+I include the variables sex and species as those potentially able to influence clutch completion. Controlling for these potential influences could improve the power of the model.
 
 ```{r Statistics}
 #convert completion into 1 = yes, 0 = no.
@@ -321,11 +304,11 @@ logistic_regression_model <- glm(clutch_completion_binary ~ body_mass_g + sex + 
 summary(logistic_regression_model)
 ```
 
-Above, I create a new column in the dataset `body_mass_clutch_updated` with values `Yes` and `No` converted to `1` and `0`, respectively. This allows the binomial logistic regression to run, which uses `glm`. A linear model uses the a direct link function, to make predictions on the response scale. The binomial logistic regression uses the `logit` link function, which converts predictions to the probabilistic log-odds scale. To discuss the results, it is common practice to exponentiate the coefficients in order to interpret them as odds-ratios.
+Above, I create a new column in the dataset `body_mass_clutch_updated` with values `Yes` and `No` converted to `1` and `0`, respectively. This allows the binomial logistic regression to run, which uses `glm()`. A linear model uses the a direct link function, to make predictions on the response scale. The binomial logistic regression uses the `logit` link function, which converts predictions to the probabilistic log-odds scale. To discuss the results, it is common practice to exponentiate the coefficients in order to interpret them as odds-ratios.
 
 <br>
 
-#### *Checking model assumptions*
+#### 3.1 Checking model assumptions
 
 I start with with multicollinearity. Sexes and species can tend to be collinear with size. If this is the case, it could make our model results appear stronger than they should through a form of double counting.
 
@@ -333,13 +316,13 @@ I start with with multicollinearity. Sexes and species can tend to be collinear 
 vif(logistic_regression_model)
 ```
 
-The variance inflation factors (`vif()`) indicate moderate multicollinearity between body mass and the other two factors. It is not so extreme as to necessitate excluding any variables from the model. Instead we should be cautious to consider multicollinearity's potential bias when interpreting the model.
+The variance inflation factors (`vif()`) indicate moderate multicollinearity between body mass and the other two factors. It is not so extreme as to necessitate excluding any variables from the model. Instead we should be cautious about multicollinearity's potential bias when interpreting the model.
 
 <br>
 
-##### Over-fitting
+##### 3.1.1 Over-fitting
 
-To check for over-fitting, I will use a stepwise test to remove non-significant factors based on AIC criteria. As this model contains fairly few factors with a reasonable number of samples, this is unlikely to be a major concern. It is worth putting in our pipeline process, however, as a good habit.
+To guard against over-fitting, I will use a stepwise test to remove non-significant factors based on AIC criteria. As this model contains few factors and a good sample size, this is unlikely to be a major concern. The check for over-fitting is worth putting in our pipeline process, however, as a good habit.
 
 ```{r show-code-hide-output, results = "hide"}
 stepwise_model <- stepAIC(logistic_regression_model, direction = "both")
@@ -350,11 +333,11 @@ stepwise_model <- stepAIC(logistic_regression_model, direction = "both")
 summary(stepwise_model)
 ```
 
-In both the selected model and the full model, the comparison between Adelie and Gentoo clutch completion success is the only statistically significant factor for predicting clutch. The difference in AIC scores is minimal, indicating either model can be chosen.
+In both the selected model and the full model, the comparison between Adelie and Gentoo species is the only statistically significant factor for predicting clutch completion. The difference in AIC scores is minimal, indicating either model can be chosen.
 
 <br>
 
-##### Independence
+##### 3.1.2 Independence
 
 To check for independence, it can often be useful to plot collection against time. I make a function for this and run it below.
 
@@ -362,48 +345,44 @@ To check for independence, it can often be useful to plot collection against tim
 plot_independence <- function(data, time_col, value_col) {
   set.seed(0)
   
-  p <- ggplot(data, aes_string(x = time_col, y = value_col)) +
-    geom_point(alpha = 0.6) +
-    labs(
-      x = "Time",
-      y = "Observed Value",
-      title = "Check for Independence Over Time"
+ggplot(data, aes(x = .data[[time_col]], y = .data[[value_col]])) +
+  geom_point(alpha = 0.6) +
+  labs(
+    x = "Time",
+    y = "Observed Value",
+    title = "Check for Independence Over Time"
     ) +
-    theme_minimal()
-  
-  return(p)
+  scale_x_date(expand = expansion(mult = c(0.05, 0.09))) + # padding on both ends of the x-axis 
+    theme_bw()
 }
 
 plot <- plot_independence(
   data = penguins_clean,
   time_col = "date_egg",
-  value_col = "body_mass_g"
-)
+  value_col = "body_mass_g")
 
 print(plot)
 ```
 
 <br>
 
-##### Linear relationship
+##### 3.1.3 Linear relationship
 
 Finally, we should check the assumption of a linear relationship between continuous explanatory variables and the logit of the response variable with a Box-Tidwell Test.
 
 ```{r}
-
-
 boxTidwell(clutch_completion_binary ~ body_mass_g, data = body_mass_clutch_updated)
 ```
 
-The p-value indicates that we fail to reject the null hypothesis, which is that the relationship is linear. In other words, the assumption is not violated.
+The p-value indicates that we fail to reject the null hypothesis that the relationship is linear. In other words, the linearity assumption is not violated.
 
 <br>
 
-### Results & Discussion
+### 4 Results & Discussion
 
 "*A results figure demonstrates the stats method chosen, and includes the results of the stats test or model."*
 
-#### Results
+#### 4.1 Results
 
 ```{r Plotting Results, message=FALSE}
 
@@ -447,11 +426,19 @@ rownames(results_df) <- NULL
 results_df
 ```
 
-The above code begins by extracting the relevant estimates, covered in [Statistical Methods]. I then create a data-frame which contains the extracted estimates along with human readable row names. I reduce the number of significant figures to improve the readability. Finally, I add a standard code to show the significance of any p_values. Finally, I hide the original row names and create the tibble seen above.
+-   The above code begins by extracting the relevant estimates, covered in [3 Statistical Methods].
+
+-   I then create a data-frame which contains the extracted estimates along with humanly readable row names.
+
+-   I reduce the number of significant figures to improve the readability.
+
+-   I add a standard code to show the significance of any p_values.
+
+-   Finally, I hide the original row names and create the tibble seen above.
 
 <br>
 
-##### Saving table
+##### 4.1.1 Saving table
 
 Next I will make a new function to save the table. This requires the additional package `gridExtra`.
 
@@ -496,25 +483,23 @@ Here is the table, inserted as an image and available on GitHub.
 
 <br>
 
-#### Discussion
+### 5 Discussion
 
 The results show that there is no statistically significant effect of body mass on clutch completion. The probability our ratio of successes to failures occurred by random chance is 0.0940.
 
-What is perhaps of more interest in the case of Body Mass in the table is the confidence intervals. They are extremely narrow around an odds-ratio = 1. This indicates that even if our result were significant statistically, the biological significance would nevertheless be negligible, as an odds-ratio of 1 is indicative of their being no difference in the probability. So if our result is significant, but significantly equal to the ratio being 1.001, this is such a minor improvement of clutch success that it should nevertheless be ignored.
+The confidence intervals for `Body Mass` are of interest. They are extremely narrow around an odds-ratio of 1, which would indicate no difference in the probability of clutch completion. The data shows that there is \~90% confidence that the odds-ratio does not overlap one, which is nearly statistically significant. However, the biological significance would nevertheless be negligible since the expected value (=1.001) is so close to 1.
 
-I included the variable sex as if different sexes have to compete or if multiple mating occurs, this could influence the sexes' chances of completing a clutch. The model does not indicate any consistent difference between the sexes when looking at sex interspecifically. The general trend is that being male lowers the probability of clutch completion, however this is not statistically significant. Here it has a wide confidence interval which intersects 1. A separate analysis may want to look for species-sex interactions, as you could imagine such behaviours being species specific.
+For species, we can imagine their different ecologies contributing to different clutch survivals. Perhaps the Chinstrap is able to dominate Adelie for a preferable niche if they coexist. Chinstrap penguins could be more k-selected than Adelie. However, we normally expect larger penguins, like Gentoo, to be more k-selected and yet they are not more likely to have a successful clutch according to the data.
 
-For species, we can imagine different ecologies contributing to different clutch survivals. Perhaps the Chinstrap is able to dominate Adelie for a preferable niche if they coexist. Alternatively, Chinstrap penguins could be more k-selected than Adelie, although the larger body size of Gentoo penguins while simultaneously not being more liekly to have a successful clutch is a reason to doubt this.
-
-The model met most of its assumptions. The independence would have been better if sampling had not taken place in such short time-windows. We could imagine a scenario where different life-histories mean Chinstrap clutches are more firmly established as complete at a later point than December when these species are consistently being sampled, for example if offspring morality is far higher some time after clutch completion but before adulthood.
+The model met most of its assumptions. The independence would have been better if sampling had not taken place in such short time-windows. We could imagine a scenario where different life-histories mean Chinstrap clutches are more firmly established as complete at a later point than December when these species are consistently being sampled, for example if offspring morality is far higher some time after data recording but before true clutch completion.
 
 The moderate multicollinearity can be ignored as the step-wise model with only the Chinstrap shows essentially the same results as when the other factors are included.
 
 <br>
 
-### Conclusion
+### 6 Conclusion
 
-Overall, we have been able to create a valid model which supports our null hypothesis that there is no significant difference in the probability of clutch completion according to body mass. Even if the sample size was increased and showed a statistically significant effect, it's biological relevance is still likely completely negligible. This result is perhaps slightly surprising since we often associate larger body mass with a better fitness. Further study may wish to investigate why this is not the case for these species of penguin.
+Overall, we have been able to create a valid model which supports our null hypothesis that there is no significant difference in the probability of clutch completion according to body mass. Even if the sample size was increased and showed a statistically significant effect, its biological relevance is still likely negligible. This result is perhaps slightly surprising since we often associate larger body mass with a better fitness. Further study may wish to investigate why this is not the case for these species of penguin.
 
 <br>
 
