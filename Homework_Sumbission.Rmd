@@ -9,7 +9,6 @@ date: "2024-11-08"
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE) #this makes the document default to have echo = TRUE
-options(tinytex.verbose = TRUE)
 ```
 
 *The following is a template .rmd RMarkdown file for you to use for your homework submission.*
@@ -552,7 +551,7 @@ Broadly, yes the code ran. I first encountered an issue with the first library c
 
 `renv::status()` revealed that "the lockfile was generated with R 4.4.1, but you're using R 4.2.2". This didn't seem to cause any issues and, if it did, it would fall on me to align the versions.
 
-I move on to data preparation, which immediately gives an error:
+I moved on to data preparation, which immediately gives an error:
 
 ```         
 > head(penguins_data_raw)
@@ -590,4 +589,14 @@ I think the biggest obstacle to altering my partner's code would be the overall 
 
 -   *What improvements did they suggest, and do you agree?*
 
+My partner's main suggestion was that I could be more concise. I'm sure this is true. In the translated words of Blaise Pascal, "I have made this letter longer than usual because I lack the time to make it shorter". Their point about including more code annotations is synergistic with this point, as in future I should consider more whether a wordy explanation can be better worked with a simple annotation. That said, statistics can be complex and this will not always be the best case.
+
+They suggested having a tidier cleaning.r file, which I completely agree with. I structured it as it was because the segment was not taken from the file verbatim. However, since I edited the code anyway, it would be easier to follow if I just attributed it all to the original author and made clear than slight changes had been made.
+
 -   *What did you learn about writing code for other people?*
+
+Throughout this I learned a great deal about writing code for other people, not least being future me! Learning about `renv()` was extremely helpful and helped me understand why my old projects weren't working each time I tried to re-load them.
+
+I learned about making and maintaining a GitHub Repository. By setting this up in the first instance, interested readers will be able to audit my commits and see the process of making my work, as well as the finished product.
+
+As I was worried about how the code would run elsewhere, I decided to boot a virtual machine with a different operating system (MacOS) and test how my code would run there. I think doing that was helpful in ensuring broad compatibility and perhaps that could become a part of data pipelines in future.
