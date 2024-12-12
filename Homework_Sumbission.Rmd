@@ -539,6 +539,8 @@ Overall, we have been able to create a valid model which supports our null hypot
 
 *You **must** provide this so I can verify there is no plagiarism between you and your partner.*
 
+<br>
+
 ### c) Reflect on your experience running their code. (300-500 words)
 
 -   *What elements of your partner's code helped you to understand and run their data pipeline?*
@@ -585,6 +587,8 @@ References are difficult to read in the bibliography and might have benefited fr
 
 I think the biggest obstacle to altering my partner's code would be the overall readability. Editing small, easily visible components like a title in a graph or colour would likely be easy. However, higher level, conceptual changes would likely be more difficult as a consequence of the formatting.
 
+<br>
+
 ### d) Reflect on your own code based on your experience with your partner's code and their review of yours. (300-500 words)
 
 -   *What improvements did they suggest, and do you agree?*
@@ -597,6 +601,6 @@ They suggested having a tidier cleaning.r file, which I completely agree with. I
 
 Throughout this I learned a great deal about writing code for other people, not least being future me! Learning about `renv()` was extremely helpful and helped me understand why my old projects weren't working each time I tried to re-load them.
 
-I learned about making and maintaining a GitHub Repository. By setting this up in the first instance, interested readers will be able to audit my commits and see the process of making my work, as well as the finished product.
+I learned about making and maintaining a GitHub Repository. By setting this up in the first instance, interested readers will be able to audit my commits and see the process of making my work, as well as the finished product. Unfortunately I had to delete my initial repository which showed edits from the very beginning due to accidentally doxxing myself. This resulted from having my anonymous GitHub account paired with the terminal but my usual GitHub account paired with Git Bash, from which the RStudio Git tab runs. I learned to check which user is signed in to Git Bash before pushing sensitive files.
 
 As I was worried about how the code would run elsewhere, I decided to boot a virtual machine with a different operating system (MacOS) and test how my code would run there. I think doing that was helpful in ensuring broad compatibility and perhaps that could become a part of data pipelines in future.
