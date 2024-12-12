@@ -547,13 +547,13 @@ Overall, we have been able to create a valid model which supports our null hypot
 
 *Upload your RProject you created for **Question 2** and any files and subfolders used to GitHub. Do not include any identifiers such as your name. Make sure your GitHub repo is public.*
 
-*GitHub link:*
+*GitHub link: <https://github.com/Anonymous-Exam-User/Palmer_Penguin_GitHub>*
 
 *You will be marked on your repo organisation and readability.*
 
 ### b) Share your repo with a partner, download, and try to run their data pipeline.
 
-*Partner's GitHub link:*
+*Partner's GitHub link: <https://github.com/lemontea63/reproducible_figures_assignment>*
 
 *You **must** provide this so I can verify there is no plagiarism between you and your partner.*
 
@@ -561,21 +561,50 @@ Overall, we have been able to create a valid model which supports our null hypot
 
 -   *What elements of your partner's code helped you to understand and run their data pipeline?*
 
+My partner has extensively annotated their code, explaining what each line does in most cases. This helps understanding. By following the template, running their data follows a logical sequence.
+
 -   *Did it run? Did you need to fix anything?*
+
+Broadly, yes the code ran. I first encountered an issue with the first library chunk, running `renv::restore()`, which should install the correct packages from the lockfile; however, I noticed some discrepancies. I got around this by just installing the most recent required packages with `renv::install()` . This works for now; however, isn't ideal for long-term reproducibility.
+
+`renv::status()` revealed that "the lockfile was generated with R 4.4.1, but you're using R 4.2.2". This didn't seem to cause any issues and, if it did, it would fall on me to align the versions.
+
+I move on to data preparation, which immediately gives an error:
+
+```         
+> head(penguins_data_raw)
+```
+
+```         
+-Error in tempfile(pattern = "_rs_rdf_", tmpdir = outputFolder, fileext = ".rdf") : 
+```
+
+```         
+-temporary name too long
+```
+
+I circumvented this by re-exracting the repo to my Documents file, instead of a deeply nested OneDrive file. This fixed the issue.
+
+When trying to run the data preparation chunk (line 134), it would not run when using the Run Current Chunk button. I was getting errors around text being part of the chunk. It was solved by adding a line break between the above section and the code chunk.
 
 -   *What suggestions would you make for improving their code to make it more understandable or reproducible, and why?*
 
+I find the in-code descriptions more difficult to read than the text sections. Personally, I think breaking the coding chunks into smaller segments and moving annotations to a text format would make the code more understandable. Additionally, where direct code annotations are preferable, such as for a minor annotation, I think the ease of understanding is improved if annotations immediately proceed the code, rather than all being found at the start of the coding sequence.
+
+I think the code would be more readable if indents were smaller in some cases, such as with ggplot. The large indents followed by lines that over-run the line make following the logic more challenging to me.
+
+When initially cleaning data, `na.omit()` is not included which causes some warning messages. It is used later when subsetting the data.
+
+In the statistics chunk (line 337), the chunk produces two plated plots of Q-Q and Residuals vs Fitted. These seem almost identical and the cause for small difference between them is not obvious from the code. This does not make the user confident in the graph's reproducibility.
+
+References are difficult to read in the bibliography and might have benefited from using Quarto's referencing capabilities.
+
 -   *If you needed to alter your partner's figure using their code, do you think that would be easy or difficult, and why?*
+
+I think the biggest obstacle to altering my partner's code would be the overall readability. Editing small, easily visible components like a title in a graph or colour would likely be easy. However, higher level, conceptual changes would likely be more difficult as a consequence of the formatting.
 
 ### d) Reflect on your own code based on your experience with your partner's code and their review of yours. (300-500 words)
 
 -   *What improvements did they suggest, and do you agree?*
 
 -   *What did you learn about writing code for other people?*
-
-### e) What are the main barriers for scientists to share their data and code, and what could be done to overcome them? (500-700 words)
-
--   Maitner et al. Code sharing increases citations, but remains uncommon. <https://doi.org/10.21203/rs.3.rs-3222221/v1>
--   Trisovic et al. A large-scale study on research code quality and execution. <https://rdcu.be/dZB7x>
--   A Rock-Star Researcher Spun a Web of Lies---and Nearly Got Away with It. <https://thewalrus.ca/a-rock-star-researcher-spun-a-web-of-lies-and-nearly-got-away-with-it/>
--   Gomes et al. Why don't we share data and code? Perceived barriers and benefits to public archiving practices <https://doi.org/10.1098/rspb.2022.1113>
