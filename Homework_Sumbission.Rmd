@@ -1,9 +1,9 @@
 ---
 title: "Homework Sumbission"
 output:
-  pdf_document: default
-  word_document: default
   html_document: default
+  word_document: default
+  pdf_document: default
 date: "2024-11-08"
 ---
 
@@ -147,6 +147,7 @@ library(car)
 library(MASS)
 library(gridExtra)
 library(grid)
+library(kableExtra)
 
 renv::status()
 ```
@@ -316,10 +317,8 @@ body_mass_clutch_updated$clutch_completion_binary <- ifelse(body_mass_clutch$clu
 logistic_regression_model <- glm(clutch_completion_binary ~ body_mass_g + sex + species, 
              family = binomial(link = "logit"), 
              data = body_mass_clutch_updated)
+
 summary(logistic_regression_model)
-
-
-
 ```
 
 Above, I create a new column in the dataset `body_mass_clutch_updated` with values `Yes` and `No` converted to `1` and `0`, respectively. This allows the binomial logistic regression to run, which uses `glm`. A linear model uses the a direct link function, to make predictions on the response scale. The binomial logistic regression uses the `logit` link function, which converts predictions to the probabilistic log-odds scale. To discuss the results, it is common practice to exponentiate the coefficients in order to interpret them as odds-ratios.
@@ -357,24 +356,22 @@ In both the selected model and the full model, the comparison between Adelie and
 
 ##### Independence
 
-To check for independence, it can often be useful to plot collection against time.
+To check for independence, it can often be useful to plot collection against time. I make a function for this and run it below.
 
 ```{r}
-plot_independence <- function(data, time_col, value_col, group_col = NULL) {
-    # Convert column names to symbols
-  time_sym <- rlang::sym(time_col)
-  value_sym <- rlang::sym(value_col)
+plot_independence <- function(data, time_col, value_col) {
+  set.seed(0)
   
-set.seed(0)
-  
-p <- ggplot(data, aes(x = !!time_sym, y = !!value_sym)) +
+  p <- ggplot(data, aes_string(x = time_col, y = value_col)) +
     geom_point(alpha = 0.6) +
     labs(
       x = "Time",
       y = "Observed Value",
-      title = "Check for Independence Over Time") +
+      title = "Check for Independence Over Time"
+    ) +
     theme_minimal()
-    return(p)
+  
+  return(p)
 }
 
 plot <- plot_independence(
@@ -412,6 +409,7 @@ The p-value indicates that we fail to reject the null hypothesis, which is that 
 
 # Make sure your code prints. 
 
+
 # extract typical statistics used to interpret model
 coefficients <- summary(logistic_regression_model)$coefficients #extract coefficients 
 odds_ratios <- exp(coefficients[, "Estimate"])  #find odds-ratios by taking exponential
@@ -447,7 +445,6 @@ rownames(results_df) <- NULL
 
 # view data frame as tibble in .Rmd
 results_df
-
 ```
 
 The above code begins by extracting the relevant estimates, covered in [Statistical Methods]. I then create a data-frame which contains the extracted estimates along with human readable row names. I reduce the number of significant figures to improve the readability. Finally, I add a standard code to show the significance of any p_values. Finally, I hide the original row names and create the tibble seen above.
@@ -601,6 +598,6 @@ They suggested having a tidier cleaning.r file, which I completely agree with. I
 
 Throughout this I learned a great deal about writing code for other people, not least being future me! Learning about `renv()` was extremely helpful and helped me understand why my old projects weren't working each time I tried to re-load them.
 
-I learned about making and maintaining a GitHub Repository. By setting this up in the first instance, interested readers will be able to audit my commits and see the process of making my work, as well as the finished product. Unfortunately I had to delete my initial repository which showed edits from the very beginning due to accidentally doxxing myself. This resulted from having my anonymous GitHub account paired with the terminal but my usual GitHub account paired with Git Bash, from which the RStudio Git tab runs. I learned to check which user is signed in to Git Bash before pushing sensitive files.
+I learned about making and maintaining a GitHub Repository. By setting this up in the first instance, interested readers will be able to audit my commits and see the process of making my work, as well as the finished product. Unfortunately I had to delete my initial repository which showed edits from the very beginning due to accidentally "doxxing" myself. This resulted from having my anonymous GitHub account paired with the terminal but my usual GitHub account paired with Git Bash, from which the RStudio Git tab runs. I learned to check which user is signed in to Git Bash before pushing sensitive files.
 
 As I was worried about how the code would run elsewhere, I decided to boot a virtual machine with a different operating system (MacOS) and test how my code would run there. I think doing that was helpful in ensuring broad compatibility and perhaps that could become a part of data pipelines in future.
