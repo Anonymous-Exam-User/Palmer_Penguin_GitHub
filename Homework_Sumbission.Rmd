@@ -87,7 +87,7 @@ Points of deception:
 
 -   I have made the line an arrow. This aims at convincing the reader of a continued projected increase should Chef Smith remain employed.
 
--   Rather than labeling with the objective "Date", I have drawn attention to unfairly influence the reader by measuring from time since Chef Smith's arrival.
+-   Rather than labeling with the objective "Date", I have unfairly influenced the reader by measuring from time since Chef Smith's arrival.
 
 -   I have used the code "coord_fixed(ratio = 10)" which stretches the graph vertically and hugely exaggerates the steepness of the line.
 
@@ -115,7 +115,7 @@ The data features various pieces of information gathered on three species of Pen
 
 I start by loading the libraries we will be using. To protect the environment, I will be using `renv()`. It ensures the packages we use have a record of which version was being used at the time we write our code. This prevents subsequent updates to packages from affecting our code's functionality. Users can use `renv::status()` to ensure the packages are correctly loaded in a consistent state.
 
-I considered loading packages in a separate file and importing them with `source()`. However, I decided not because readers would then be forced to open an additional file which would reduced the level of transparency within the .Rmd file.
+I considered loading packages in a separate file and importing them with `source()`. However, I decided not because readers would then be forced to open an additional file which would reduce the level of transparency within the .Rmd file.
 
 ```{r Libraries, echo=TRUE, message=FALSE, warning=FALSE}
 # Make sure your code prints.
@@ -219,7 +219,7 @@ body_mass_clutch_updated <- transform(body_mass_clutch,
 violin_plot <- ggplot(body_mass_clutch_updated, aes(x = clutch_completion, y = body_mass_g, fill = species_clutch)) +
     geom_violin() +
     stat_summary(fun = mean, geom = "crossbar", width = 0.9, linewidth = 0.2, color = "black") + # add mean lines
-    facet_wrap(~species) +
+    facet_wrap(~species) + #make species panels 
     scale_fill_manual(values = species_shades) + # use custom color scheme
     labs(title = "Body Mass by Clutch Completion for Each Species",
          x = "Clutch Completion",
@@ -244,7 +244,7 @@ I considered adding the plotting code to a function file. However, since I am on
 
 The code contains a number of steps to ensure the data is communicated in a clear way.
 
--   I begin by creating a new dataset (avoiding overwriting) with a new column that contains information on both the species and clutch completion. This allows me to colour plots individually down the line.
+-   I begin by creating a new dataset (avoiding overwriting) with `transform()` making a new column that contains information on both the species and clutch completion. This allows me to colour plots individually down the line.
 
 -   I then code the plot itself. I begin by plotting the violin plot while faceting for species, a variable I see as likely important for weight independently and this is supported by the graph.
 
@@ -274,7 +274,7 @@ save_plot_svg(violin_plot,
                        size = 19, scaling = 1.5)
 ```
 
-I used a function covered in the computer class. I then used the function to save the plot, setting the size to be optinal for viewing the graph full-screen on a computer.
+I used a function covered in the computer class. I then used the function to save the plot, setting the size to be optimal for viewing the graph full-screen on a computer.
 
 <br>
 
@@ -290,7 +290,7 @@ $\text{H}_{a2} :$ Penguins with greater body mass have significantly lower proba
 
 ### 3 Statistical Methods
 
-I model the data using a binomial logistic regression with `clutch_completion` as the response variable.
+I model the data using a binomial logistic regression with the probability of `clutch_completion` as the response variable.
 
 $$\\ln\left(\frac{p_i}{1 - p_i}\right) = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \dots + \beta_n X_n$$
 
@@ -348,7 +348,7 @@ To check for independence, it can often be useful to plot collection against tim
 plot_independence <- function(data, time_col, value_col) {
   set.seed(0)
   
-ggplot(data, aes(x = .data[[time_col]], y = .data[[value_col]])) +
+ggplot(data, aes(x = {{time_col}}, y = {{value_col}})) + # using {}  means we must provide columns as unquoted
   geom_point(alpha = 0.6) +
   labs(
     x = "Time",
@@ -361,8 +361,8 @@ ggplot(data, aes(x = .data[[time_col]], y = .data[[value_col]])) +
 
 plot <- plot_independence(
   data = penguins_clean,
-  time_col = "date_egg",
-  value_col = "body_mass_g")
+  time_col = date_egg, #provide unquoted
+  value_col = body_mass_g)
 
 print(plot)
 ```
@@ -431,9 +431,13 @@ results_df
 
 -   The above code begins by extracting the relevant estimates, covered in [3 Statistical Methods].
 
+    -   `summary.glm()$coefficients` produces a matrix of coefficients, standard errors, z-values and p-values.
+
+    -   `confint()` computes confidence intervals
+
 -   I then create a data-frame which contains the extracted estimates along with humanly readable row names.
 
--   I reduce the number of significant figures to improve the readability.
+-   I reduce the number of significant figures to improve the readability using "C-style formats".
 
 -   I add a standard code to show the significance of any p_values.
 
@@ -578,14 +582,14 @@ I think the biggest obstacle to altering my partner's code would its overall rea
 
 -   *What improvements did they suggest, and do you agree?*
 
-My partner's main suggestion was that I could be more concise. They prefer more in-code annotations and suggest they work better than wordy explanations. I agree that in some cases replacing a lengthier description with an annotation would have benefitted my code. In other cases, however, the complexity of the statistical analysis leads me to prefer more full exposition of that the code is doing.
+My partner's main suggestion was that I could be more concise. They prefer more in-code annotations and suggest they work better than wordy explanations. I agree that in some cases replacing a lengthier description with an annotation would have benefited my code. In other cases, however, the complexity of the statistical analysis leads me to prefer fuller exposition of what the code is doing.
 
 They suggested having a tidier cleaning.r file, which I completely agree with. I structured it with a function above the author attribution because that function was not taken from the file verbatim. It would be clearer if I attributed the whole document to the original author, making clear where changes had been made.
 
 -   *What did you learn about writing code for other people?*
 
-Throughout this I learned a great deal about writing code for other people, including my future-selves. Learning about `renv()` was extremely helpful for understanding why my old projects would stop working when re-loaded and for protecting those to come.
+Throughout this I learned a great deal about writing code for other people, including my future self. Learning about `renv()` was extremely helpful for understanding why my old projects would stop working when re-loaded and for protecting those to come.
 
-I learned about making and maintaining a GitHub Repository. By setting this up in the first instance, this enables interested readers to audit my commits and see the process of constructing my code, as well as the finished product. Unfortunately I had to delete my initial repository which showed edits from the very beginning due to accidentally "doxxing" myself. This resulted from having my anonymous GitHub account paired with the RStudio terminal but my usual GitHub account paired with Git Bash, from which the RStudio Git tab runs. I learned to check which user is signed in to Git Bash before pushing sensitive files.
+I learned about making and maintaining a GitHub Repository. This enables interested readers to audit my commits and see the process of constructing my code, as well as the finished product. Unfortunately I had to delete my initial repository which showed edits from the very beginning due to accidentally "doxxing" myself. This resulted from having my anonymous GitHub account paired with the RStudio terminal but my usual GitHub account paired with Git Bash, from which the RStudio Git tab runs. I learned to check which user is signed in to Git Bash before pushing sensitive files.
 
 As I was worried about how the code would run elsewhere, I decided to boot a virtual machine with a different operating system (MacOS) and test how my code would run there. Doing that was helpful in ensuring broad compatibility and perhaps could become a part of data pipelines in future.
