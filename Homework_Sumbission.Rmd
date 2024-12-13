@@ -1,9 +1,12 @@
 ---
 title: "Homework Sumbission"
 output:
-  pdf_document: default
+  html_document:
+    toc: true
+    toc_depth: 3
   word_document: default
-  html_document: default
+  pdf_document: 
+    latex_engine: pdflatex
 date: "2024-11-08"
 ---
 
@@ -531,9 +534,9 @@ My partner has extensively annotated their code, explaining what each line does 
 
 -   *Did it run? Did you need to fix anything?*
 
-Broadly, yes the code ran. I first encountered an issue with the first library chunk, running `renv::restore()`, which should install the correct packages from the lockfile; however, I noticed some discrepancies. I got around this by just installing the most recent required packages with `renv::install()` . This works for now; however, isn't ideal for long-term reproducibility.
+Broadly, yes the code ran. I encountered an issue with the first chunk which loads libraries. Running `renv::restore()`, which should install the correct packages from the lockfile, produced discrepancies. I got around these by installing the most recent required packages with `renv::install()`. This works for now; however, is not ideal for long-term reproducibility.
 
-`renv::status()` revealed that "the lockfile was generated with R 4.4.1, but you're using R 4.2.2". This didn't seem to cause any issues and, if it did, it would fall on me to align the versions.
+`renv::status()` also revealed that "the lockfile was generated with R 4.4.1, but you're using R 4.2.2". This didn't seem to cause any issues but, if it did, it would fall on me to align the versions.
 
 I moved on to data preparation, which immediately gives an error:
 
@@ -549,25 +552,25 @@ I moved on to data preparation, which immediately gives an error:
 -temporary name too long
 ```
 
-I circumvented this by re-extracting the repo to my Documents file, instead of a deeply nested OneDrive file. This fixed the issue.
+I circumvented this by re-extracting the repository to my Documents file, instead of a deeply nested OneDrive file. This fixed the issue.
 
-When trying to run the data preparation chunk (line 134), it would not run when using the Run Current Chunk button. I was getting errors around text being part of the chunk. It was solved by adding a line break between the above section and the code chunk.
+The data preparation chunk (line 134 at time of writing) would not run using the Run Current Chunk button. I received errors which suggested that the text above was part of the coding chunk. This problem was easily solved by adding a line break between the text section and the code chunk.
 
 -   *What suggestions would you make for improving their code to make it more understandable or reproducible, and why?*
 
-I find the in-code descriptions more difficult to read than the text sections. Personally, I think breaking the coding chunks into smaller segments and moving annotations to a text format would make the code more understandable. Additionally, where direct code annotations are preferable, such as for a minor annotation, I think the ease of understanding is improved if annotations immediately proceed the code, rather than all being found at the start of the coding sequence.
+I find the in-code descriptions harder to read than the text sections. Personally, I think breaking the coding chunks into smaller segments and moving annotations to a text format would make the code more understandable. Additionally, where direct code annotations are preferable, such as for a minor annotation, I think understating would be facilitated if annotations immediately proceeded the relevant code, rather than all being found at the start of the coding sequence.
 
-I think the code would be more readable if indents were smaller in some cases, such as with ggplot. The large indents followed by lines that over-run the line make following the logic more challenging to me.
+I think the code would be more readable if indents were smaller in some cases, such as with ggplot. The large indents followed by lines that over-run made following the logic more challenging.
 
 When initially cleaning data, `na.omit()` is not included which causes some warning messages. It is used later when subsetting the data.
 
-In the statistics chunk (line 337), the chunk produces two plated plots of Q-Q and Residuals vs Fitted. These seem almost identical and the cause for small difference between them is not obvious from the code. This does not make the user confident in the graph's reproducibility.
+In the statistics chunk (line 337 at time of writing), the chunk produces two plated plots of Q-Q and Residuals vs Fitted. These seem almost identical and the reason for the small differences between them is not obvious from the code. This reduces confidence in the graph's reproducibility.
 
-References are difficult to read in the bibliography and might have benefited from using Quarto's referencing capabilities.
+References in the bibliography are hard to read without line breaks.
 
 -   *If you needed to alter your partner's figure using their code, do you think that would be easy or difficult, and why?*
 
-I think the biggest obstacle to altering my partner's code would be the overall readability. Editing small, easily visible components like a title in a graph or colour would likely be easy. However, higher level, conceptual changes would likely be more difficult as a consequence of the formatting.
+I think the biggest obstacle to altering my partner's code would its overall readability. Changing small, easily visible components like a title in a graph or a colour would be easy. However, higher-level conceptual changes would be hard because of the unclear formatting.
 
 <br>
 
@@ -575,14 +578,14 @@ I think the biggest obstacle to altering my partner's code would be the overall 
 
 -   *What improvements did they suggest, and do you agree?*
 
-My partner's main suggestion was that I could be more concise. I'm sure this is true. In the translated words of Blaise Pascal, "I have made this letter longer than usual because I lack the time to make it shorter". Their point about including more code annotations is synergistic with this point, as in future I should consider more whether a wordy explanation can be better worked with a simple annotation. That said, statistics can be complex and this will not always be the best case.
+My partner's main suggestion was that I could be more concise. They prefer more in-code annotations and suggest they work better than wordy explanations. I agree that in some cases replacing a lengthier description with an annotation would have benefitted my code. In other cases, however, the complexity of the statistical analysis leads me to prefer more full exposition of that the code is doing.
 
-They suggested having a tidier cleaning.r file, which I completely agree with. I structured it as it was because the segment was not taken from the file verbatim. However, since I edited the code anyway, it would be easier to follow if I just attributed it all to the original author and made clear than slight changes had been made.
+They suggested having a tidier cleaning.r file, which I completely agree with. I structured it with a function above the author attribution because that function was not taken from the file verbatim. It would be clearer if I attributed the whole document to the original author, making clear where changes had been made.
 
 -   *What did you learn about writing code for other people?*
 
-Throughout this I learned a great deal about writing code for other people, not least being future me! Learning about `renv()` was extremely helpful and helped me understand why my old projects weren't working each time I tried to re-load them.
+Throughout this I learned a great deal about writing code for other people, including my future-selves. Learning about `renv()` was extremely helpful for understanding why my old projects would stop working when re-loaded and for protecting those to come.
 
-I learned about making and maintaining a GitHub Repository. By setting this up in the first instance, interested readers will be able to audit my commits and see the process of making my work, as well as the finished product. Unfortunately I had to delete my initial repository which showed edits from the very beginning due to accidentally "doxxing" myself. This resulted from having my anonymous GitHub account paired with the terminal but my usual GitHub account paired with Git Bash, from which the RStudio Git tab runs. I learned to check which user is signed in to Git Bash before pushing sensitive files.
+I learned about making and maintaining a GitHub Repository. By setting this up in the first instance, this enables interested readers to audit my commits and see the process of constructing my code, as well as the finished product. Unfortunately I had to delete my initial repository which showed edits from the very beginning due to accidentally "doxxing" myself. This resulted from having my anonymous GitHub account paired with the RStudio terminal but my usual GitHub account paired with Git Bash, from which the RStudio Git tab runs. I learned to check which user is signed in to Git Bash before pushing sensitive files.
 
-As I was worried about how the code would run elsewhere, I decided to boot a virtual machine with a different operating system (MacOS) and test how my code would run there. I think doing that was helpful in ensuring broad compatibility and perhaps that could become a part of data pipelines in future.
+As I was worried about how the code would run elsewhere, I decided to boot a virtual machine with a different operating system (MacOS) and test how my code would run there. Doing that was helpful in ensuring broad compatibility and perhaps could become a part of data pipelines in future.
